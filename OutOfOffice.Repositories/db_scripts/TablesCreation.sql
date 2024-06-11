@@ -31,7 +31,7 @@ CREATE TABLE Employees (
     PositionID INT NOT NULL,
     StatusID INT NOT NULL,
     PeoplePartnerID INT, -- from the “Employee” table with “HR Manager” position
-    OutOfOfficeBalance DECIMAL(5,2) NOT NULL,
+    OutOfOfficeBalance DECIMAL(6,3) NOT NULL,
     Photo VARBINARY(MAX),
 	CONSTRAINT FK_SubdivisionID FOREIGN KEY (SubdivisionID) REFERENCES Subdivisions(ID),
 	CONSTRAINT FK_PositionID FOREIGN KEY (PositionID) REFERENCES Positions(ID),
