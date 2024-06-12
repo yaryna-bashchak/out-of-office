@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using OutOfOffice.Contracts.Models;
 
 namespace OutOfOffice.Contracts.DTOs;
 

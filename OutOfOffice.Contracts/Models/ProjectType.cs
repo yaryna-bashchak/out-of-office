@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace OutOfOffice.Contracts.Models;
+﻿namespace OutOfOffice.Contracts.Models;
 
 public class ProjectType
 {
