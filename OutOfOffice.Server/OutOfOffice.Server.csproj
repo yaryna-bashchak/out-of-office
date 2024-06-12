@@ -20,6 +20,8 @@
     <ProjectReference Include="..\outofoffice.client\outofoffice.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\OutOfOffice.Repositories\OutOfOffice.Repositories.csproj" />
+    <ProjectReference Include="..\OutOfOffice.Services\OutOfOffice.Services.csproj" />
   </ItemGroup>
 
 </Project>
