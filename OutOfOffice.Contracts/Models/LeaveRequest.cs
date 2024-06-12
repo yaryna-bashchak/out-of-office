@@ -10,7 +10,7 @@ public class LeaveRequest
     public int RequestTypeId { get; set; }
     public int? Hours { get; set; }
     public int StatusId { get; set; }
-    public string? Comment { get; set; }
+    public string Comment { get; set; }
 
     public AbsenceReason AbsenceReason { get; set; } = null!;
     public Employee Employee { get; set; } = null!;

@@ -8,7 +8,7 @@ public class Project
     public DateOnly? EndDate { get; set; }
     public int ProjectManagerId { get; set; }
     public int StatusId { get; set; }
-    public string? Comment { get; set; }
+    public string Comment { get; set; }
 
     public Employee ProjectManager { get; set; } = null!;
     public ProjectType ProjectType { get; set; } = null!;
