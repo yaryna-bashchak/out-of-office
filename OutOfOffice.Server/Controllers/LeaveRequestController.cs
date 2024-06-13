@@ -50,11 +50,9 @@ public class LeaveRequestController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<GetLeaveRequestDto>> AddLeaveRequestAsync([FromBody] AddLeaveRequestDto newLeaveRequestDto)
     {
-        if (newLeaveRequestDto.EndDate < newLeaveRequestDto.StartDate)
-            return BadRequest("EndDate must be greater than or equal to StartDate.");
-
-        if (newLeaveRequestDto.Hours.HasValue && (newLeaveRequestDto.Hours < 0 || newLeaveRequestDto.Hours > 8))
-            return BadRequest("Hours must be between 0 and 8 hours.");
+        var validationResult = ValidateLeaveRequest(newLeaveRequestDto.StartDate, newLeaveRequestDto.EndDate, newLeaveRequestDto.Hours);
+        if (validationResult != null)
+            return validationResult;
 
         try
         {
@@ -74,11 +72,9 @@ public class LeaveRequestController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<GetLeaveRequestDto>> UpdateLeaveRequestAsync(int id, [FromBody] UpdateLeaveRequestDto updatedLeaveRequestDto)
     {
-        if (updatedLeaveRequestDto.EndDate < updatedLeaveRequestDto.StartDate)
-            return BadRequest("EndDate must be greater than or equal to StartDate.");
-
-        if (updatedLeaveRequestDto.Hours.HasValue && (updatedLeaveRequestDto.Hours < 0 || updatedLeaveRequestDto.Hours > 8))
-            return BadRequest("Hours must be between 0 and 8 hours.");
+        var validationResult = ValidateLeaveRequest(updatedLeaveRequestDto.StartDate, updatedLeaveRequestDto.EndDate, updatedLeaveRequestDto.Hours);
+        if (validationResult != null)
+            return validationResult;
 
         try
         {
@@ -97,5 +93,16 @@ public class LeaveRequestController : ControllerBase
         {
             return StatusCode(500, ex.Message);
         }
+    }
+
+    private ActionResult ValidateLeaveRequest(DateOnly startDate, DateOnly endDate, int? hours)
+    {
+        if (endDate < startDate)
+            return BadRequest("EndDate must be greater than or equal to StartDate.");
+
+        if (hours.HasValue && (hours < 0 || hours > 8))
+            return BadRequest("Hours must be between 0 and 8 hours.");
+
+        return null;
     }
 }
