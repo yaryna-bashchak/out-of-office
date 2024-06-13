@@ -14,7 +14,7 @@ public class EmployeeRepository : IEmployeeRepository
         _connectionString = connectionString;
     }
 
-    public async Task<List<Employee>> GetAllAsync()
+    public async Task<List<Employee>> GetAllEmployeesAsync()
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -47,7 +47,7 @@ public class EmployeeRepository : IEmployeeRepository
         }
     }
 
-    public async Task<Employee> GetByIdAsync(int id)
+    public async Task<Employee> GetEmployeeByIdAsync(int id)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -82,19 +82,48 @@ public class EmployeeRepository : IEmployeeRepository
         }
     }
 
-    public Task<Employee> AddAsync(Employee newObject)
+    public async Task<Employee> AddEmployeeAsync(Employee employee)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                INSERT INTO Employees (Fullname, SubdivisionID, PositionID, StatusID, PeoplePartnerID, OutOfOfficeBalance, Photo)
+                VALUES (@Fullname, @SubdivisionID, @PositionID, @StatusID, @PeoplePartnerID, @OutOfOfficeBalance, @Photo);
+                SELECT CAST(SCOPE_IDENTITY() as int);";
+
+            var employeeId = await connection.ExecuteScalarAsync<int>(query, employee);
+
+            if (employeeId == 0)
+                return null;
+
+            return await GetEmployeeByIdAsync(employeeId);
+        }
     }
 
-    public Task<bool> DeleteAsync(int id)
+    public async Task<Employee> UpdateEmployeeAsync(Employee updatedEmployee)
     {
-        throw new NotImplementedException();
-    }
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                UPDATE Employees
+                SET Fullname = @Fullname, 
+                    SubdivisionID = @SubdivisionID, 
+                    PositionID = @PositionID,
+                    StatusID = @StatusID,
+                    PeoplePartnerID = @PeoplePartnerID, 
+                    OutOfOfficeBalance = @OutOfOfficeBalance, 
+                    Photo = @Photo
+                WHERE id = @id";
 
-    public Task<Employee> UpdateAsync(Employee updatedObject)
-    {
-        throw new NotImplementedException();
+            var affectedRows = await connection.ExecuteAsync(query, updatedEmployee);
+
+            if (affectedRows == 0)
+                return null;
+
+            return await GetEmployeeByIdAsync(updatedEmployee.Id);
+        }
     }
 }
 
