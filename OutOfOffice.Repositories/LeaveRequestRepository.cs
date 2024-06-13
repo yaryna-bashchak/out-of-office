@@ -27,8 +27,8 @@ public class LeaveRequestRepository : ILeaveRequestRepository
                    s.Id, s.Name
                 FROM LeaveRequests lr
                 LEFT JOIN Employees e ON lr.EmployeeId = e.Id
-                LEFT JOIN AbsenceReason ar ON lr.StatusId = ar.Id
-                LEFT JOIN RequestType rt ON lr.RequestTypeId = rt.Id
+                LEFT JOIN AbsenceReasons ar ON lr.AbsenceReasonId = ar.Id
+                LEFT JOIN RequestTypes rt ON lr.RequestTypeId = rt.Id
                 LEFT JOIN LeaveRequestStatuses s ON lr.StatusId = s.Id";
 
             var leaveRequests = await connection.QueryAsync<LeaveRequest, Employee, AbsenceReason, RequestType, LeaveRequestStatus, LeaveRequest>(
@@ -60,10 +60,10 @@ public class LeaveRequestRepository : ILeaveRequestRepository
                    s.Id, s.Name
                 FROM LeaveRequests lr
                 LEFT JOIN Employees e ON lr.EmployeeId = e.Id
-                LEFT JOIN AbsenceReason ar ON lr.StatusId = ar.Id
-                LEFT JOIN RequestType rt ON lr.RequestTypeId = rt.Id
+                LEFT JOIN AbsenceReasons ar ON lr.AbsenceReasonId = ar.Id
+                LEFT JOIN RequestTypes rt ON lr.RequestTypeId = rt.Id
                 LEFT JOIN LeaveRequestStatuses s ON lr.StatusId = s.Id
-                WHERE e.Id = @Id";
+                WHERE lr.Id = @Id";
 
             var leaveRequest = await connection.QueryAsync<LeaveRequest, Employee, AbsenceReason, RequestType, LeaveRequestStatus, LeaveRequest>(
                 query,

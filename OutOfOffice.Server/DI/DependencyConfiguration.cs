@@ -11,9 +11,11 @@ public static class DependencyConfiguration
     {
         // Repositories
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
 
         // Services
         services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 
         return services;
     }

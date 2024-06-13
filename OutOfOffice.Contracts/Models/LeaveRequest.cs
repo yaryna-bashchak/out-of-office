@@ -5,8 +5,8 @@ public class LeaveRequest
     public int Id { get; set; }
     public int EmployeeId { get; set; }
     public int AbsenceReasonId { get; set; }
-    public DateOnly StartDate { get; set; }
-    public DateOnly EndDate { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
     public int RequestTypeId { get; set; }
     public int? Hours { get; set; }
     public int StatusId { get; set; }

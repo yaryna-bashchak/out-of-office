@@ -95,12 +95,12 @@ public class LeaveRequestController : ControllerBase
         }
     }
 
-    private ActionResult ValidateLeaveRequest(DateOnly startDate, DateOnly endDate, int? hours)
+    private ActionResult ValidateLeaveRequest(DateTime startDate, DateTime endDate, int? hours)
     {
         if (endDate < startDate)
             return BadRequest("EndDate must be greater than or equal to StartDate.");
 
-        if (hours.HasValue && (hours < 0 || hours > 8))
+        if (hours.HasValue && (hours <= 0 || hours > 8))
             return BadRequest("Hours must be between 0 and 8 hours.");
 
         return null;
