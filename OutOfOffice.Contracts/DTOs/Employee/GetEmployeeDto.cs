@@ -2,7 +2,7 @@
 
 namespace OutOfOffice.Contracts.DTOs;
 
-public class EmployeeDto
+public class GetEmployeeDto
 {
     public int Id { get; set; }
     public string FullName { get; set; } = null!;

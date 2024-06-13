@@ -16,7 +16,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<EmployeeDto>>> GetAllEmployees()
+    public async Task<ActionResult<IEnumerable<GetEmployeeDto>>> GetAllEmployeesAsync()
     {
         var employees = await _employeeService.GetAllEmployeesAsync();
         if (employees == null || employees.Count == 0)
@@ -27,7 +27,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<EmployeeDto>> GetEmployeeById(int id)
+    public async Task<ActionResult<GetEmployeeDto>> GetEmployeeByIdAsync(int id)
     {
         var employee = await _employeeService.GetEmployeeByIdAsync(id);
         if (employee == null)

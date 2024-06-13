@@ -8,7 +8,7 @@ public class ProjectDto
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }
     public string Comment { get; set; }
-    public EmployeeDto ProjectManager { get; set; } = null!;
+    public GetEmployeeDto ProjectManager { get; set; } = null!;
     public ProjectType ProjectType { get; set; } = null!;
     public ProjectStatus Status { get; set; } = null!;
 }

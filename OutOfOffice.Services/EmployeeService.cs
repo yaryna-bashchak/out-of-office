@@ -14,20 +14,20 @@ public class EmployeeService : IEmployeeService
         _employeeRepository = employeeRepository;
     }
 
-    public async Task<List<EmployeeDto>> GetAllEmployeesAsync()
+    public async Task<List<GetEmployeeDto>> GetAllEmployeesAsync()
     {
         var employees = await _employeeRepository.GetAllEmployeesAsync();
         return employees.Select(e => MapToEmployeeDto(e)).ToList();
     }
 
-    public async Task<EmployeeDto> GetEmployeeByIdAsync(int id)
+    public async Task<GetEmployeeDto> GetEmployeeByIdAsync(int id)
     {
         var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
         if (employee == null) return null;
         return MapToEmployeeDto(employee);
     }
 
-    public async Task<EmployeeDto> AddEmployeeAsync(EmployeeDto newEmployeeDto)
+    public async Task<GetEmployeeDto> AddEmployeeAsync(AddEmployeeDto newEmployeeDto)
     {
         var employee = MapToEmployee(newEmployeeDto);
         var createdEmployee = await _employeeRepository.AddEmployeeAsync(employee);
@@ -35,17 +35,17 @@ public class EmployeeService : IEmployeeService
         return MapToEmployeeDto(createdEmployee);
     }
 
-    public async Task<EmployeeDto> UpdateEmployeeAsync(EmployeeDto updatedEmployeeDto)
+    public async Task<GetEmployeeDto> UpdateEmployeeAsync(int id, UpdateEmployeeDto updatedEmployeeDto)
     {
-        var employee = MapToEmployee(updatedEmployeeDto);
+        var employee = MapToEmployee(id, updatedEmployeeDto);
         var updatedEmployee = await _employeeRepository.UpdateEmployeeAsync(employee);
         if (updatedEmployee == null) return null;
         return MapToEmployeeDto(updatedEmployee);
     }
 
-    private EmployeeDto MapToEmployeeDto(Employee employee)
+    private static GetEmployeeDto MapToEmployeeDto(Employee employee)
     {
-        return new EmployeeDto
+        return new GetEmployeeDto
         {
             Id = employee.Id,
             FullName = employee.FullName,
@@ -58,22 +58,36 @@ public class EmployeeService : IEmployeeService
         };
     }
 
-    private Employee MapToEmployee(EmployeeDto employeeDto)
+    private static Employee MapToEmployee(AddEmployeeDto employeeDto)
     {
         return new Employee
         {
-            Id = employeeDto.Id,
             FullName = employeeDto.FullName,
             OutOfOfficeBalance = employeeDto.OutOfOfficeBalance,
-            Photo = employeeDto.Photo,
-            PeoplePartnerId = employeeDto.PeoplePartner?.Id,
-            PositionId = employeeDto.Position.Id,
-            StatusId = employeeDto.Status.Id,
-            SubdivisionId = employeeDto.Subdivision.Id,
+            // Photo = employeeDto.Photo,
+            PeoplePartnerId = employeeDto.PeoplePartnerId,
+            PositionId = employeeDto.PositionId,
+            StatusId = employeeDto.StatusId,
+            SubdivisionId = employeeDto.SubdivisionId,
         };
     }
 
-    private PeoplePartnerDto MapToPeoplePartnerDto(Employee employee)
+    private static Employee MapToEmployee(int id, UpdateEmployeeDto employeeDto)
+    {
+        return new Employee
+        {
+            Id = id,
+            FullName = employeeDto.FullName,
+            OutOfOfficeBalance = employeeDto.OutOfOfficeBalance,
+            // Photo = employeeDto.Photo,
+            PeoplePartnerId = employeeDto.PeoplePartnerId,
+            PositionId = employeeDto.PositionId,
+            StatusId = employeeDto.StatusId,
+            SubdivisionId = employeeDto.SubdivisionId,
+        };
+    }
+
+    private static PeoplePartnerDto MapToPeoplePartnerDto(Employee employee)
     {
         return new PeoplePartnerDto
         {
