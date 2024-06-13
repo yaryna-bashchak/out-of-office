@@ -23,7 +23,6 @@ public class EmployeeService : IEmployeeService
     public async Task<GetEmployeeDto> GetEmployeeByIdAsync(int id)
     {
         var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
-        if (employee == null) return null;
         return MapToEmployeeDto(employee);
     }
 
@@ -31,7 +30,6 @@ public class EmployeeService : IEmployeeService
     {
         var employee = MapToEmployee(newEmployeeDto);
         var createdEmployee = await _employeeRepository.AddEmployeeAsync(employee);
-        if (createdEmployee == null) return null;
         return MapToEmployeeDto(createdEmployee);
     }
 
@@ -39,7 +37,6 @@ public class EmployeeService : IEmployeeService
     {
         var employee = MapToEmployee(id, updatedEmployeeDto);
         var updatedEmployee = await _employeeRepository.UpdateEmployeeAsync(employee);
-        if (updatedEmployee == null) return null;
         return MapToEmployeeDto(updatedEmployee);
     }
 
