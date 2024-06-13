@@ -36,4 +36,38 @@ public class EmployeeController : ControllerBase
         }
         return Ok(employee);
     }
+
+    [HttpPost]
+    public async Task<ActionResult<GetEmployeeDto>> AddEmployeeAsync([FromBody] AddEmployeeDto newEmployeeDto)
+    {
+        if (newEmployeeDto == null)
+        {
+            return BadRequest("Invalid employee data.");
+        }
+
+        var addedEmployee = await _employeeService.AddEmployeeAsync(newEmployeeDto);
+        if (addedEmployee == null)
+        {
+            return StatusCode(500, "Unable to add employee. Please check the details and try again.");
+        }
+
+        return Ok(addedEmployee);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<GetEmployeeDto>> UpdateEmployeeAsync(int id, [FromBody] UpdateEmployeeDto updatedEmployeeDto)
+    {
+        if (updatedEmployeeDto == null)
+        {
+            return BadRequest("Invalid employee data.");
+        }
+
+        var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, updatedEmployeeDto);
+        if (updatedEmployee == null)
+        {
+            return NotFound($"No employee found with ID {id} to update.");
+        }
+
+        return Ok(updatedEmployee);
+    }
 }
