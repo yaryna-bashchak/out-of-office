@@ -58,8 +58,7 @@ GO
 
 IF NOT EXISTS (SELECT * FROM RequestTypes)
 INSERT INTO RequestTypes (Name) VALUES 
-    ('Full day'),
-    ('Multiple days'),
+    ('Full days'),
     ('Partial day');
 GO
 
@@ -76,15 +75,15 @@ IF NOT EXISTS (SELECT * FROM LeaveRequests)
 INSERT INTO LeaveRequests (EmployeeID, AbsenceReasonID, StartDate, EndDate, RequestTypeID, Hours, StatusID, Comment)
     VALUES
     (11, 2, '2024-01-01', '2024-01-01', 1, NULL, 2, 'New Year Day off'),
-    (12, 2, '2024-01-02', '2024-01-03', 2, NULL, 4, NULL),
+    (12, 2, '2024-01-02', '2024-01-03', 1, NULL, 4, NULL),
     (13, 1, '2024-01-04', '2024-01-04', 1, NULL, 2, 'Medical appointment'),
-    (14, 1, '2024-01-15', '2024-01-15', 3, 4,	 4, 'Dentist in the morning'),
-    (15, 2, '2024-01-10', '2024-01-12', 2, NULL, 3, 'Ski trip'),
+    (14, 1, '2024-01-15', '2024-01-15', 2, 4,	 4, 'Dentist in the morning'),
+    (15, 2, '2024-01-10', '2024-01-12', 1, NULL, 3, 'Ski trip'),
     (16, 1, '2024-02-01', '2024-02-01', 1, NULL, 4, 'Personal day'),
     (17, 2, '2024-03-05', '2024-03-05', 1, NULL, 2, 'Child’s school event'),
-    (18, 2, '2024-04-07', '2024-04-08', 2, NULL, 5, 'Short vacation'),
-    (19, 1, '2024-05-01', '2024-05-01', 3, 3,	 4, 'Doctor visit'),
-    (20, 2, '2024-06-14', '2024-06-20', 2, NULL, 1, 'Long vacation'),
+    (18, 2, '2024-04-07', '2024-04-08', 1, NULL, 5, 'Short vacation'),
+    (19, 1, '2024-05-01', '2024-05-01', 2, 3,	 4, 'Doctor visit'),
+    (20, 2, '2024-06-14', '2024-06-20', 1, NULL, 1, 'Long vacation'),
     (20, 1, '2024-06-22', '2024-06-22', 1, NULL, 4, 'Doctor visit');
 GO
 

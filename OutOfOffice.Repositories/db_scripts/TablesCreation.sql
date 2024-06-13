@@ -54,7 +54,7 @@ CREATE TABLE AbsenceReasons ( -- sick, vacation
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RequestTypes')
-CREATE TABLE RequestTypes ( -- full day, multiple days, partial day
+CREATE TABLE RequestTypes ( -- full days, partial day
     ID INT PRIMARY KEY IDENTITY(1,1),
     Name VARCHAR(50) NOT NULL
 );
