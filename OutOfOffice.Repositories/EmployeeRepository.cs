@@ -78,6 +78,11 @@ public class EmployeeRepository : IEmployeeRepository
                 new { Id = id },
                 splitOn: "Id");
 
+            if (employee.FirstOrDefault() == null)
+            {
+                throw new KeyNotFoundException($"Employee with ID {id} not found.");
+            }
+
             return employee.FirstOrDefault();
         }
     }
@@ -92,12 +97,19 @@ public class EmployeeRepository : IEmployeeRepository
                 VALUES (@Fullname, @SubdivisionID, @PositionID, @StatusID, @PeoplePartnerID, @OutOfOfficeBalance, @Photo);
                 SELECT CAST(SCOPE_IDENTITY() as int);";
 
-            var employeeId = await connection.ExecuteScalarAsync<int>(query, employee);
+            try
+            {
+                var employeeId = await connection.ExecuteScalarAsync<int>(query, employee);
 
-            if (employeeId == 0)
-                return null;
+                if (employeeId == 0)
+                    return null;
 
-            return await GetEmployeeByIdAsync(employeeId);
+                return await GetEmployeeByIdAsync(employeeId);
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException("Invalid foreign key. Please check the details and try again.");
+            }
         }
     }
 
@@ -117,12 +129,15 @@ public class EmployeeRepository : IEmployeeRepository
                     Photo = @Photo
                 WHERE id = @id";
 
-            var affectedRows = await connection.ExecuteAsync(query, updatedEmployee);
-
-            if (affectedRows == 0)
-                return null;
-
-            return await GetEmployeeByIdAsync(updatedEmployee.Id);
+            try
+            {
+                await connection.ExecuteAsync(query, updatedEmployee);
+                return await GetEmployeeByIdAsync(updatedEmployee.Id);
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException("Invalid foreign key. Please check the details and try again.");
+            }
         }
     }
 }

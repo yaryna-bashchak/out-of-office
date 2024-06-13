@@ -18,56 +18,78 @@ public class EmployeeController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetEmployeeDto>>> GetAllEmployeesAsync()
     {
-        var employees = await _employeeService.GetAllEmployeesAsync();
-        if (employees == null || employees.Count == 0)
+        try
         {
-            return NotFound("No employees found.");
+            var employees = await _employeeService.GetAllEmployeesAsync();
+            return Ok(employees);
         }
-        return Ok(employees);
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<GetEmployeeDto>> GetEmployeeByIdAsync(int id)
     {
-        var employee = await _employeeService.GetEmployeeByIdAsync(id);
-        if (employee == null)
+        try
         {
-            return NotFound($"Employee with ID {id} not found.");
+            var employee = await _employeeService.GetEmployeeByIdAsync(id);
+            return Ok(employee);
         }
-        return Ok(employee);
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     [HttpPost]
     public async Task<ActionResult<GetEmployeeDto>> AddEmployeeAsync([FromBody] AddEmployeeDto newEmployeeDto)
     {
-        if (newEmployeeDto == null)
-        {
-            return BadRequest("Invalid employee data.");
-        }
+        if (newEmployeeDto.OutOfOfficeBalance < 0)
+            return BadRequest("OutOfOfficeBalance must be greater than or equals zero.");
 
-        var addedEmployee = await _employeeService.AddEmployeeAsync(newEmployeeDto);
-        if (addedEmployee == null)
+        try
         {
-            return StatusCode(500, "Unable to add employee. Please check the details and try again.");
+            var addedEmployee = await _employeeService.AddEmployeeAsync(newEmployeeDto);
+            return Ok(addedEmployee);
         }
-
-        return Ok(addedEmployee);
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<GetEmployeeDto>> UpdateEmployeeAsync(int id, [FromBody] UpdateEmployeeDto updatedEmployeeDto)
     {
-        if (updatedEmployeeDto == null)
-        {
-            return BadRequest("Invalid employee data.");
-        }
+        if (updatedEmployeeDto.OutOfOfficeBalance < 0)
+            return BadRequest("OutOfOfficeBalance must be greater than or equals zero.");
 
-        var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, updatedEmployeeDto);
-        if (updatedEmployee == null)
+        try
         {
-            return NotFound($"No employee found with ID {id} to update.");
+            var updatedEmployee = await _employeeService.UpdateEmployeeAsync(id, updatedEmployeeDto);
+            return Ok(updatedEmployee);
         }
-
-        return Ok(updatedEmployee);
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
     }
 }
