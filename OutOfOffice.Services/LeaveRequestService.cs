@@ -30,17 +30,25 @@ public class LeaveRequestService : ILeaveRequestService
 
     public async Task<GetLeaveRequestDto> AddLeaveRequestAsync(AddLeaveRequestDto leaveRequestDto)
     {
+        // check if the employee's OutOfOffice balance is sufficient to receive this leave request
         decimal workingDays;
-        var requestType = await _leaveRequestRepository.GetAllRequestTypesAsync();
-        var partialDayTypeId = requestType.Find(rt => rt.Name == "Partial day").Id;
+        var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync();
+        var partialDayTypeId = requestTypes.Find(rt => rt.Name == "Partial day").Id;
 
-        if (leaveRequestDto.RequestTypeId == partialDayTypeId && leaveRequestDto.Hours.HasValue)
+        if (leaveRequestDto.RequestTypeId == partialDayTypeId)
         {
-            workingDays = leaveRequestDto.Hours.Value / 8m;
+            if (leaveRequestDto.Hours.HasValue)
+            {
+                workingDays = leaveRequestDto.Hours.Value / 8m;
+            }
+            else
+            {
+                throw new InvalidOperationException("If request type is partial day than hours are required.");
+            }
         }
         else
         {
-            workingDays = leaveRequestDto.EndDate.DayNumber - leaveRequestDto.StartDate.DayNumber;
+            workingDays = leaveRequestDto.EndDate.DayNumber - leaveRequestDto.StartDate.DayNumber + 1;
         }
 
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
@@ -49,7 +57,15 @@ public class LeaveRequestService : ILeaveRequestService
             throw new InvalidOperationException($"You cannot create this request because your current OutOfOfficeBalance ({employee.OutOfOfficeBalance} days) is less than the specified number of days ({workingDays} days).");
         }
 
+        // map LeaveRequestDto to LeaveRequest
         var mappedLeaveRequest = MapToLeaveRequest(leaveRequestDto);
+
+        // set status to "New"
+        var statuses = await _leaveRequestRepository.GetAllStatusesAsync();
+        var newStatusId = statuses.Find(s => s.Name == "New").Id;
+        mappedLeaveRequest.StatusId = newStatusId;
+
+        // create LeaveRequest
         var createdLeaveRequest = await _leaveRequestRepository.AddLeaveRequestAsync(mappedLeaveRequest);
         return MapToLeaveRequestDto(createdLeaveRequest);
     }
@@ -89,7 +105,6 @@ public class LeaveRequestService : ILeaveRequestService
             EmployeeId = leaveRequestDto.EmployeeId,
             AbsenceReasonId = leaveRequestDto.AbsenceReasonId,
             RequestTypeId = leaveRequestDto.RequestTypeId,
-            StatusId = leaveRequestDto.StatusId,
         };
     }
 

@@ -22,7 +22,4 @@ public class AddLeaveRequestDto
 
     [Required(ErrorMessage = "RequestTypeId is required")]
     public int RequestTypeId { get; set; }
-    
-    [Required(ErrorMessage = "StatusId is required")]
-    public int StatusId { get; set; }
 }
