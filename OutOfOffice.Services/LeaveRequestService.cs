@@ -31,25 +31,7 @@ public class LeaveRequestService : ILeaveRequestService
     public async Task<GetLeaveRequestDto> AddLeaveRequestAsync(AddLeaveRequestDto leaveRequestDto)
     {
         // check if the employee's OutOfOffice balance is sufficient to receive this leave request
-        decimal workingDays;
-        var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync();
-        var partialDayTypeId = requestTypes.Find(rt => rt.Name == "Partial day").Id;
-
-        if (leaveRequestDto.RequestTypeId == partialDayTypeId)
-        {
-            if (leaveRequestDto.Hours.HasValue)
-            {
-                workingDays = leaveRequestDto.Hours.Value / 8m;
-            }
-            else
-            {
-                throw new InvalidOperationException("If request type is partial day than hours are required.");
-            }
-        }
-        else
-        {
-            workingDays = leaveRequestDto.EndDate.DayNumber - leaveRequestDto.StartDate.DayNumber + 1;
-        }
+        decimal workingDays = await CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate);
 
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
         if (employee.OutOfOfficeBalance < workingDays)
@@ -70,12 +52,43 @@ public class LeaveRequestService : ILeaveRequestService
         return MapToLeaveRequestDto(createdLeaveRequest);
     }
 
-    public async Task<GetLeaveRequestDto> UpdateLeaveRequestAsync(int id, UpdateLeaveRequestDto leaveRequest)
+    public async Task<GetLeaveRequestDto> UpdateLeaveRequestAsync(int id, UpdateLeaveRequestDto leaveRequestDto)
     {
+        // check if the employee's OutOfOffice balance is sufficient to receive this leave request
+        decimal workingDays = await CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate);
+
+        var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
+        if (employee.OutOfOfficeBalance < workingDays)
+        {
+            throw new InvalidOperationException($"You cannot create this request because your current OutOfOfficeBalance ({employee.OutOfOfficeBalance} days) is less than the specified number of days ({workingDays} days).");
+        }
+
         // add creating and updating approval requests
-        var mappedLeaveRequest = MapToLeaveRequest(id, leaveRequest);
+        var mappedLeaveRequest = MapToLeaveRequest(id, leaveRequestDto);
         var updatedLeaveRequest = await _leaveRequestRepository.UpdateLeaveRequestAsync(mappedLeaveRequest);
         return MapToLeaveRequestDto(updatedLeaveRequest);
+    }
+
+    private async Task<decimal> CalculateWorkingDaysAsync(int requestTypeId, int? hours, DateOnly startDate, DateOnly endDate)
+    {
+        var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync();
+        var partialDayTypeId = requestTypes.Find(rt => rt.Name == "Partial day").Id;
+
+        if (requestTypeId == partialDayTypeId)
+        {
+            if (hours.HasValue)
+            {
+                return hours.Value / 8m;
+            }
+            else
+            {
+                throw new InvalidOperationException("If request type is partial day, then hours are required.");
+            }
+        }
+        else
+        {
+            return endDate.DayNumber - startDate.DayNumber + 1;
+        }
     }
 
     private static GetLeaveRequestDto MapToLeaveRequestDto(LeaveRequest leaveRequest)
