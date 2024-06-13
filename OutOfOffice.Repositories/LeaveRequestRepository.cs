@@ -137,5 +137,50 @@ public class LeaveRequestRepository : ILeaveRequestRepository
             }
         }
     }
+
+    public async Task<List<AbsenceReason>> GetAllAbsenceReasonsAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM AbsenceReasons";
+
+            var absenceReasons = await connection.QueryAsync<AbsenceReason>(query);
+
+            return absenceReasons.ToList();
+        }
+    }
+
+    public async Task<List<RequestType>> GetAllRequestTypesAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM RequestTypes";
+
+            var requestTypes = await connection.QueryAsync<RequestType>(query);
+
+            return requestTypes.ToList();
+        }
+    }
+
+    public async Task<List<LeaveRequestStatus>> GetAllStatusesAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM LeaveRequestStatuses";
+
+            var statuses = await connection.QueryAsync<LeaveRequestStatus>(query);
+
+            return statuses.ToList();
+        }
+    }
 }
 

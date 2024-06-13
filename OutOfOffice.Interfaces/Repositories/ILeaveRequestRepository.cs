@@ -8,4 +8,7 @@ public interface ILeaveRequestRepository
     Task<LeaveRequest> GetLeaveRequestByIdAsync(int id);
     Task<LeaveRequest> AddLeaveRequestAsync(LeaveRequest leaveRequest);
     Task<LeaveRequest> UpdateLeaveRequestAsync(LeaveRequest leaveRequest);
+    Task<List<AbsenceReason>> GetAllAbsenceReasonsAsync();
+    Task<List<RequestType>> GetAllRequestTypesAsync();
+    Task<List<LeaveRequestStatus>> GetAllStatusesAsync();
 }
