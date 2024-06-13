@@ -100,10 +100,6 @@ public class EmployeeRepository : IEmployeeRepository
             try
             {
                 var employeeId = await connection.ExecuteScalarAsync<int>(query, employee);
-
-                if (employeeId == 0)
-                    return null;
-
                 return await GetEmployeeByIdAsync(employeeId);
             }
             catch (SqlException ex) when (ex.Number == 547)
@@ -113,7 +109,7 @@ public class EmployeeRepository : IEmployeeRepository
         }
     }
 
-    public async Task<Employee> UpdateEmployeeAsync(Employee updatedEmployee)
+    public async Task<Employee> UpdateEmployeeAsync(Employee employee)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -131,8 +127,8 @@ public class EmployeeRepository : IEmployeeRepository
 
             try
             {
-                await connection.ExecuteAsync(query, updatedEmployee);
-                return await GetEmployeeByIdAsync(updatedEmployee.Id);
+                await connection.ExecuteAsync(query, employee);
+                return await GetEmployeeByIdAsync(employee.Id);
             }
             catch (SqlException ex) when (ex.Number == 547)
             {
