@@ -4,8 +4,8 @@ public class Project
 {
     public int Id { get; set; }
     public int ProjectTypeId { get; set; }
-    public DateOnly StartDate { get; set; }
-    public DateOnly? EndDate { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public int ProjectManagerId { get; set; }
     public int StatusId { get; set; }
     public string Comment { get; set; }
