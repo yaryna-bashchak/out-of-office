@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Repositories;
@@ -22,7 +22,7 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT ar.Id, ar.Comment, ar.LeaveRequestId,
+                SELECT ar.Id, ar.Comment, ar.LeaveRequestId, ar.ApproverID, ar.StatusId,
                     e.Id, e.FullName,
                     s.Id, s.Name
                 FROM ApprovalRequests ar
@@ -54,7 +54,7 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT ar.Id, ar.Comment, ar.LeaveRequestId,
+                SELECT ar.Id, ar.Comment, ar.LeaveRequestId, ar.ApproverID, ar.StatusId,
                     e.Id, e.FullName,
                     s.Id, s.Name
                 FROM ApprovalRequests ar

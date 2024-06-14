@@ -20,7 +20,7 @@ public class LeaveRequestRepository : ILeaveRequestRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT lr.Id, lr.StartDate, lr.EndDate, lr.Hours, lr.Comment,
+                SELECT lr.Id, lr.StartDate, lr.EndDate, lr.Hours, lr.Comment, lr.EmployeeId, lr.AbsenceReasonId, lr.RequestTypeId, lr.StatusId,
                    e.Id, e.FullName,
                    ar.Id, ar.Name,
                    rt.Id, rt.Name,
@@ -53,7 +53,7 @@ public class LeaveRequestRepository : ILeaveRequestRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT lr.Id, lr.StartDate, lr.EndDate, lr.Hours, lr.Comment,
+                SELECT lr.Id, lr.StartDate, lr.EndDate, lr.Hours, lr.Comment, lr.EmployeeId, lr.AbsenceReasonId, lr.RequestTypeId, lr.StatusId,
                    e.Id, e.FullName,
                    ar.Id, ar.Name,
                    rt.Id, rt.Name,
@@ -124,7 +124,7 @@ public class LeaveRequestRepository : ILeaveRequestRepository
                     Hours = @Hours,
                     StatusID = @StatusID,
                     Comment = @Comment
-                WHERE id = @id";
+                WHERE id = @Id";
 
             try
             {

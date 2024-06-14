@@ -1,4 +1,4 @@
-﻿using OutOfOffice.Contracts.DTOs;
+using OutOfOffice.Contracts.DTOs;
 using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Repositories;
 using OutOfOffice.Interfaces.Services;
@@ -101,7 +101,7 @@ public class LeaveRequestService : ILeaveRequestService
             EndDate = leaveRequest.EndDate,
             Hours = leaveRequest.Hours,
             Comment = leaveRequest.Comment,
-            Employee = new GetEmployeeDto { Id = leaveRequest.Employee.Id, FullName = leaveRequest.Employee.FullName },
+            Employee = new GetEmployeeDto { Id = leaveRequest.EmployeeId, FullName = leaveRequest.Employee.FullName },
             AbsenceReason = leaveRequest.AbsenceReason,
             RequestType = leaveRequest.RequestType,
             Status = leaveRequest.Status,
@@ -134,7 +134,6 @@ public class LeaveRequestService : ILeaveRequestService
             EmployeeId = leaveRequestDto.EmployeeId,
             AbsenceReasonId = leaveRequestDto.AbsenceReasonId,
             RequestTypeId = leaveRequestDto.RequestTypeId,
-            StatusId = leaveRequestDto.StatusId,
         };
     }
 }

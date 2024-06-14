@@ -93,7 +93,7 @@ INSERT INTO ApprovalRequestStatuses (Name) VALUES
     ('New'),
     ('Approved'),
     ('Rejected'),
-    ('Canceled');
+    ('Cancelled');
 GO
 
 IF NOT EXISTS (SELECT * FROM ApprovalRequests)

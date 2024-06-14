@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Repositories;
@@ -20,7 +20,7 @@ public class EmployeeRepository : IEmployeeRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.Photo,
+                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.Photo, e.PositionId, e.StatusId, e.SubdivisionId, e.PeoplePartnerId,
                    p.Id, p.Name,
                    s.Id, s.Name,
                    sub.Id, sub.Name,
