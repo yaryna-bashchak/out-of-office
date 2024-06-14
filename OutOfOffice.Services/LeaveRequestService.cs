@@ -58,93 +58,38 @@ public class LeaveRequestService : ILeaveRequestService
     {
         var prevLeaveRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(id);
         var leaveRequestStatuses = await _leaveRequestRepository.GetAllStatusesAsync();
-        var status = leaveRequestStatuses.Find(s => s.Id == prevLeaveRequest.StatusId).Name;
+        var status = GetStatusName(leaveRequestStatuses, prevLeaveRequest.StatusId);
 
-        // request info can only be updated if it is "New"
-        if (status != "New")
-        {
-            throw new InvalidOperationException($"Leave Request with ID {id} is already {status.ToLower()}. It can not be edited.");
-        }
+        ValidateRequestStatus(id, status, "New");
 
-        // check if the employee's OutOfOffice balance is sufficient to receive this leave request
         decimal workingDays = await CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate);
 
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
-        if (employee.OutOfOfficeBalance < workingDays)
-        {
-            throw new InvalidOperationException($"Current OutOfOfficeBalance ({employee.OutOfOfficeBalance} days) is less than the specified number of days ({workingDays} days).");
-        }
+        ValidateOutOfOfficeBalance(employee.OutOfOfficeBalance, workingDays);
 
         var mappedLeaveRequest = MapToLeaveRequest(id, leaveRequestDto);
         var updatedLeaveRequest = await _leaveRequestRepository.UpdateLeaveRequestAsync(mappedLeaveRequest);
+
         return MapToLeaveRequestDto(updatedLeaveRequest);
     }
 
-    public async Task<GetLeaveRequestDto> UpdateLeaveRequestStatusAsync(int id, int statusId)
+    public async Task<GetLeaveRequestDto> UpdateLeaveRequestStatusAsync(int requestId, int statusId)
     {
-        var prevLeaveRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(id);
+        var prevLeaveRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(requestId);
         var leaveRequestStatuses = await _leaveRequestRepository.GetAllStatusesAsync();
-        var prevStatus = leaveRequestStatuses.Find(s => s.Id == prevLeaveRequest.Status.Id).Name;
-        var employee = await _employeeRepository.GetEmployeeByIdAsync(prevLeaveRequest.EmployeeId);
+        var prevStatus = GetStatusName(leaveRequestStatuses, prevLeaveRequest.StatusId);
+        var curStatus = GetStatusName(leaveRequestStatuses, statusId);
 
-        // request status can only be updated if it is "New" or "Submitted" 
-        if (prevStatus != "New" && prevStatus != "Submitted")
-        {
-            throw new InvalidOperationException($"Leave Request with ID {id} is already {prevStatus.ToLower()}. Its status can not be edited.");
-        }
+        ValidateRequestStatus(requestId, prevStatus, "New", "Submitted");
 
-        var leaveRequest = new LeaveRequest
-        {
-            Id = id,
-            StartDate = prevLeaveRequest.StartDate,
-            EndDate = prevLeaveRequest.EndDate,
-            Hours = prevLeaveRequest.Hours,
-            Comment = prevLeaveRequest.Comment,
-            EmployeeId = prevLeaveRequest.EmployeeId,
-            AbsenceReasonId = prevLeaveRequest.AbsenceReasonId,
-            RequestTypeId = prevLeaveRequest.RequestTypeId,
-            StatusId = statusId,
-        };
-        var updatedLeaveRequest = await _leaveRequestRepository.UpdateLeaveRequestAsync(leaveRequest);
+        var updatedLeaveRequest = await UpdateLeaveRequestStatus(requestId, prevLeaveRequest, statusId);
 
-        // create or update appropriate approval requests
-        var approvalRequestStatuses = await _approvalRequestRepository.GetAllStatusesAsync();
-        var curStatus = leaveRequestStatuses.Find(s => s.Id == statusId).Name;
-
-        if (prevStatus == "New" && curStatus == "Submitted")
-        {
-            var newApprovalRequestStatusId = approvalRequestStatuses.Find(s => s.Name == "New").Id;
-            var approverIds = await _employeeRepository.GetAllProjectManagerIdsOfEmployeeAsync(prevLeaveRequest.EmployeeId);
-            if (employee.PeoplePartner != null) approverIds.Add(employee.PeoplePartner.Id);
-
-            foreach (var approverId in approverIds)
-            {
-                await _approvalRequestRepository.AddApprovalRequestAsync(new ApprovalRequest { LeaveRequestId = id, StatusId = newApprovalRequestStatusId, ApproverId = approverId });
-            }
-        }
-        else if (prevStatus == "Submitted" && curStatus == "Cancelled")
-        {
-            var newApprovalRequestStatusId = approvalRequestStatuses.Find(s => s.Name == "Cancelled").Id;
-            var approvalRequests = await _approvalRequestRepository.GetAllApprovalRequestsByLeaveRequestIdAsync(id);
-
-            foreach (var approvalRequest in approvalRequests)
-            {
-                var updatedApprovalRequest = new ApprovalRequest
-                {
-                    Id = approvalRequest.Id,
-                    Comment = approvalRequest.Comment,
-                    ApproverId = approvalRequest.ApproverId,
-                    LeaveRequestId = approvalRequest.LeaveRequestId,
-                    StatusId = newApprovalRequestStatusId
-                };
-
-                await _approvalRequestRepository.UpdateApprovalRequestAsync(updatedApprovalRequest);
-            }
-        }
+        await HandleApprovalRequestsAsync(requestId, prevStatus, curStatus, prevLeaveRequest.EmployeeId);
 
         return MapToLeaveRequestDto(updatedLeaveRequest);
     }
 
+    // private methods
     private async Task<decimal> CalculateWorkingDaysAsync(int requestTypeId, int? hours, DateTime startDate, DateTime endDate)
     {
         var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync();
@@ -164,6 +109,100 @@ public class LeaveRequestService : ILeaveRequestService
         else
         {
             return (endDate.Date - startDate.Date).Days + 1;
+        }
+    }
+    private string GetStatusName(List<LeaveRequestStatus> statuses, int statusId)
+    {
+        return statuses.Find(s => s.Id == statusId).Name;
+    }
+
+    private void ValidateRequestStatus(int id, string currentStatus, params string[] validStatuses)
+    {
+        if (!validStatuses.Contains(currentStatus))
+        {
+            throw new InvalidOperationException($"Leave Request with ID {id} is already {currentStatus.ToLower()}. It can not be edited.");
+        }
+    }
+
+    private void ValidateOutOfOfficeBalance(decimal balance, decimal requiredDays)
+    {
+        if (balance < requiredDays)
+        {
+            throw new InvalidOperationException($"Current OutOfOfficeBalance ({balance} days) is less than the specified number of days ({requiredDays} days).");
+        }
+    }
+
+    private async Task<LeaveRequest> UpdateLeaveRequestStatus(int id, LeaveRequest prevLeaveRequest, int statusId)
+    {
+        var leaveRequest = new LeaveRequest
+        {
+            Id = id,
+            StartDate = prevLeaveRequest.StartDate,
+            EndDate = prevLeaveRequest.EndDate,
+            Hours = prevLeaveRequest.Hours,
+            Comment = prevLeaveRequest.Comment,
+            EmployeeId = prevLeaveRequest.EmployeeId,
+            AbsenceReasonId = prevLeaveRequest.AbsenceReasonId,
+            RequestTypeId = prevLeaveRequest.RequestTypeId,
+            StatusId = statusId,
+        };
+
+        return await _leaveRequestRepository.UpdateLeaveRequestAsync(leaveRequest);
+    }
+
+    private async Task HandleApprovalRequestsAsync(int id, string prevStatus, string curStatus, int employeeId)
+    {
+        var statuses = await _approvalRequestRepository.GetAllStatusesAsync();
+
+        if (prevStatus == "New" && curStatus == "Submitted")
+        {
+            var newStatusId = statuses.Find(s => s.Name == "New").Id;
+            await CreateApprovalRequestsAsync(id, newStatusId, employeeId);
+        }
+        else if (prevStatus == "Submitted" && curStatus == "Cancelled")
+        {
+            var newApprovalRequestStatusId = statuses.Find(s => s.Name == "Cancelled").Id;
+            await UpdateApprovalRequestsAsync(id, newApprovalRequestStatusId);
+        }
+    }
+
+    private async Task CreateApprovalRequestsAsync(int leaveRequestId, int newStatusId, int employeeId)
+    {
+        var approverIds = await _employeeRepository.GetAllProjectManagerIdsOfEmployeeAsync(employeeId);
+        var employee = await _employeeRepository.GetEmployeeByIdAsync(employeeId);
+
+        if (employee.PeoplePartnerId != null)
+        {
+            approverIds.Add(employee.PeoplePartnerId.Value);
+        }
+
+        foreach (var approverId in approverIds)
+        {
+            await _approvalRequestRepository.AddApprovalRequestAsync(new ApprovalRequest
+            {
+                LeaveRequestId = leaveRequestId,
+                StatusId = newStatusId,
+                ApproverId = approverId
+            });
+        }
+    }
+
+    private async Task UpdateApprovalRequestsAsync(int leaveRequestId, int newStatusId)
+    {
+        var approvalRequests = await _approvalRequestRepository.GetAllApprovalRequestsByLeaveRequestIdAsync(leaveRequestId);
+
+        foreach (var approvalRequest in approvalRequests)
+        {
+            var updatedApprovalRequest = new ApprovalRequest
+            {
+                Id = approvalRequest.Id,
+                Comment = approvalRequest.Comment,
+                ApproverId = approvalRequest.ApproverId,
+                LeaveRequestId = approvalRequest.LeaveRequestId,
+                StatusId = newStatusId
+            };
+
+            await _approvalRequestRepository.UpdateApprovalRequestAsync(updatedApprovalRequest);
         }
     }
 
