@@ -28,4 +28,44 @@ public class ApprovalRequestController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
+    
+    [HttpGet("{id}")]
+    public async Task<ActionResult<GetApprovalRequestDto>> GetApprovalRequestByIdAsync(int id)
+    {
+        try
+        {
+            var approvalRequest = await _approvalRequestService.GetApprovalRequestByIdAsync(id);
+            return Ok(approvalRequest);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<GetApprovalRequestDto>> UpdateApprovalRequestAsync(int id, [FromBody] UpdateApprovalRequestDto updatedApprovalRequestDto)
+    {
+        try
+        {
+            var updatedApprovalRequest = await _approvalRequestService.UpdateApprovalRequestAsync(id, updatedApprovalRequestDto);
+            return Ok(updatedApprovalRequest);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 }
