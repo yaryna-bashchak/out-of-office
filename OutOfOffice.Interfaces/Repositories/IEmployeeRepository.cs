@@ -9,4 +9,5 @@ public interface IEmployeeRepository
     Task<Employee> AddEmployeeAsync(Employee employee);
     Task<Employee> UpdateEmployeeAsync(Employee employee);
     Task<List<int>> GetAllProjectManagerIdsOfEmployeeAsync(int employeeId);
+    Task<List<Employee>> GetEmployeesByProjectIdAsync(int projectId);
 }

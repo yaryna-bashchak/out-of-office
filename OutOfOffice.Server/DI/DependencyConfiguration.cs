@@ -13,11 +13,13 @@ public static class DependencyConfiguration
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<ILeaveRequestRepository, LeaveRequestRepository>();
         services.AddScoped<IApprovalRequestRepository, ApprovalRequestRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
 
         // Services
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<ILeaveRequestService, LeaveRequestService>();
         services.AddScoped<IApprovalRequestService, ApprovalRequestService>();
+        services.AddScoped<IProjectService, ProjectService>();
 
         return services;
     }
