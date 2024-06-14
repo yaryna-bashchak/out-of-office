@@ -92,7 +92,7 @@ public class LeaveRequestService : ILeaveRequestService
         }
     }
 
-    private static GetLeaveRequestDto MapToLeaveRequestDto(LeaveRequest leaveRequest)
+    public static GetLeaveRequestDto MapToLeaveRequestDto(LeaveRequest leaveRequest)
     {
         return new GetLeaveRequestDto
         {
