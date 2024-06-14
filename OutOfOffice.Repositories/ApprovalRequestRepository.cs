@@ -50,20 +50,100 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
 
     public async Task<ApprovalRequest> GetApprovalRequestByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT ar.Id, ar.Comment, ar.LeaveRequestId,
+                    e.Id, e.FullName,
+                    s.Id, s.Name
+                FROM ApprovalRequests ar
+                LEFT JOIN Employees e ON ar.ApproverID = e.Id
+                LEFT JOIN ApprovalRequestStatuses s ON ar.StatusId = s.Id
+                WHERE ar.Id = @Id";
 
+            var approvalRequests = await connection.QueryAsync<ApprovalRequest, Employee, ApprovalRequestStatus, ApprovalRequest>(
+                query,
+                (approvalRequest, approver, approvalRequestStatus) =>
+                {
+                    approvalRequest.Approver = approver;
+                    approvalRequest.Status = approvalRequestStatus;
+                    return approvalRequest;
+                },
+                new { Id = id },
+                splitOn: "Id");
+
+            var approvalRequest = approvalRequests.FirstOrDefault();
+            if (approvalRequest == null)
+            {
+                throw new KeyNotFoundException($"ApprovalRequest with ID {id} not found.");
+            }
+
+            approvalRequest.LeaveRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(approvalRequest.LeaveRequestId);
+            return approvalRequest;
+        }
     }
 
     public async Task<ApprovalRequest> AddApprovalRequestAsync(ApprovalRequest approvalRequest)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                INSERT INTO ApprovalRequests (ApproverID, LeaveRequestID, StatusID, Comment)
+                VALUES (@ApproverID, @LeaveRequestID, @StatusID, @Comment);
+                SELECT CAST(SCOPE_IDENTITY() as int);";
 
+            try
+            {
+                var approvalRequestId = await connection.ExecuteScalarAsync<int>(query, approvalRequest);
+                return await GetApprovalRequestByIdAsync(approvalRequestId);
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException("Invalid foreign key. Please check the details and try again.");
+            }
+        }
     }
 
     public async Task<ApprovalRequest> UpdateApprovalRequestAsync(ApprovalRequest approvalRequest)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                UPDATE ApprovalRequests
+                SET ApproverID = @ApproverID,
+                    LeaveRequestID = @LeaveRequestID,
+                    StatusID = @StatusID,
+                    Comment = @Comment
+                WHERE id = @id";
 
+            try
+            {
+                await connection.ExecuteAsync(query, approvalRequest);
+                return await GetApprovalRequestByIdAsync(approvalRequest.Id);
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException("Invalid foreign key. Please check the details and try again.");
+            }
+        }
+    }
+
+    public async Task<List<ApprovalRequestStatus>> GetAllStatusesAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM ApprovalRequestStatuses";
+
+            var statuses = await connection.QueryAsync<ApprovalRequestStatus>(query);
+
+            return statuses.ToList();
+        }
     }
 }
 
