@@ -152,11 +152,20 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT ar.*
+                SELECT ar.*, s.Id, s.Name
                 FROM ApprovalRequests ar
+                    LEFT JOIN ApprovalRequestStatuses s ON ar.StatusId = s.Id
                 WHERE ar.LeaveRequestID = @LeaveRequestId";
 
-            var approvalRequests = await connection.QueryAsync<ApprovalRequest>(query, new { LeaveRequestId = leaveRequestId });
+            var approvalRequests = await connection.QueryAsync<ApprovalRequest, ApprovalRequestStatus, ApprovalRequest>(
+                query,
+                (approvalRequest, approvalRequestStatus) =>
+                {
+                    approvalRequest.Status = approvalRequestStatus;
+                    return approvalRequest;
+                },
+                new { LeaveRequestId = leaveRequestId },
+                splitOn: "Id");
             return approvalRequests.ToList();
         }
     }

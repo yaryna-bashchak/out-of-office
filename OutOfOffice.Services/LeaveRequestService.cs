@@ -33,7 +33,8 @@ public class LeaveRequestService : ILeaveRequestService
     public async Task<GetLeaveRequestDto> AddLeaveRequestAsync(AddLeaveRequestDto leaveRequestDto)
     {
         // check if the employee's OutOfOffice balance is sufficient to receive this leave request
-        decimal workingDays = await CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate);
+        var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync();
+        decimal workingDays = CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate, requestTypes);
 
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
         if (employee.OutOfOfficeBalance < workingDays)
@@ -62,7 +63,8 @@ public class LeaveRequestService : ILeaveRequestService
 
         ValidateRequestStatus(id, status, "New");
 
-        decimal workingDays = await CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate);
+        var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync(); 
+        decimal workingDays = CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate, requestTypes);
 
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
         ValidateOutOfOfficeBalance(employee.OutOfOfficeBalance, workingDays);
@@ -75,24 +77,24 @@ public class LeaveRequestService : ILeaveRequestService
 
     public async Task<GetLeaveRequestDto> UpdateLeaveRequestStatusAsync(int requestId, int statusId)
     {
-        var prevLeaveRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(requestId);
-        var leaveRequestStatuses = await _leaveRequestRepository.GetAllStatusesAsync();
-        var prevStatus = GetStatusName(leaveRequestStatuses, prevLeaveRequest.StatusId);
-        var curStatus = GetStatusName(leaveRequestStatuses, statusId);
+        var prevRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(requestId);
+        var statuses = await _leaveRequestRepository.GetAllStatusesAsync();
+        var prevStatus = GetStatusName(statuses, prevRequest.StatusId);
+        var curStatus = GetStatusName(statuses, statusId);
 
         ValidateRequestStatus(requestId, prevStatus, "New", "Submitted");
 
-        var updatedLeaveRequest = await UpdateLeaveRequestStatus(requestId, prevLeaveRequest, statusId);
+        var leaveRequest = MapLeaveRequestStatus(requestId, statusId, prevRequest);
+        var updatedLeaveRequest = await _leaveRequestRepository.UpdateLeaveRequestAsync(leaveRequest);
 
-        await HandleApprovalRequestsAsync(requestId, prevStatus, curStatus, prevLeaveRequest.EmployeeId);
+        await HandleApprovalRequestsAsync(requestId, prevStatus, curStatus, prevRequest.EmployeeId);
 
         return MapToLeaveRequestDto(updatedLeaveRequest);
     }
 
     // private methods
-    private async Task<decimal> CalculateWorkingDaysAsync(int requestTypeId, int? hours, DateTime startDate, DateTime endDate)
+    public static decimal CalculateWorkingDaysAsync(int requestTypeId, int? hours, DateTime startDate, DateTime endDate, List<RequestType> requestTypes)
     {
-        var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync();
         var partialDayTypeId = requestTypes.Find(rt => rt.Name == "Partial day").Id;
 
         if (requestTypeId == partialDayTypeId)
@@ -124,7 +126,7 @@ public class LeaveRequestService : ILeaveRequestService
         }
     }
 
-    private void ValidateOutOfOfficeBalance(decimal balance, decimal requiredDays)
+    public static void ValidateOutOfOfficeBalance(decimal balance, decimal requiredDays)
     {
         if (balance < requiredDays)
         {
@@ -132,11 +134,11 @@ public class LeaveRequestService : ILeaveRequestService
         }
     }
 
-    private async Task<LeaveRequest> UpdateLeaveRequestStatus(int id, LeaveRequest prevLeaveRequest, int statusId)
+    public static LeaveRequest MapLeaveRequestStatus(int leaveRequestId, int statusId, LeaveRequest prevLeaveRequest)
     {
-        var leaveRequest = new LeaveRequest
+        return new LeaveRequest
         {
-            Id = id,
+            Id = leaveRequestId,
             StartDate = prevLeaveRequest.StartDate,
             EndDate = prevLeaveRequest.EndDate,
             Hours = prevLeaveRequest.Hours,
@@ -146,8 +148,6 @@ public class LeaveRequestService : ILeaveRequestService
             RequestTypeId = prevLeaveRequest.RequestTypeId,
             StatusId = statusId,
         };
-
-        return await _leaveRequestRepository.UpdateLeaveRequestAsync(leaveRequest);
     }
 
     private async Task HandleApprovalRequestsAsync(int id, string prevStatus, string curStatus, int employeeId)
@@ -161,8 +161,8 @@ public class LeaveRequestService : ILeaveRequestService
         }
         else if (prevStatus == "Submitted" && curStatus == "Cancelled")
         {
-            var newApprovalRequestStatusId = statuses.Find(s => s.Name == "Cancelled").Id;
-            await UpdateApprovalRequestsAsync(id, newApprovalRequestStatusId);
+            var newStatusId = statuses.Find(s => s.Name == "Cancelled").Id;
+            await UpdateApprovalRequestsAsync(id, newStatusId);
         }
     }
 
