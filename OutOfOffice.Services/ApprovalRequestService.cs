@@ -20,13 +20,13 @@ public class ApprovalRequestService : IApprovalRequestService
     public async Task<List<GetApprovalRequestDto>> GetAllApprovalRequestsAsync()
     {
         var approvalRequests = await _approvalRequestRepository.GetAllApprovalRequestsAsync();
-        return approvalRequests.Select(ar => MapToApprovalRequestDto(ar)).ToList();
+        return approvalRequests.Select(ar => CustomMapper.MapToApprovalRequestDto(ar)).ToList();
     }
 
     public async Task<GetApprovalRequestDto> GetApprovalRequestByIdAsync(int id)
     {
         var approvalRequest = await _approvalRequestRepository.GetApprovalRequestByIdAsync(id);
-        return MapToApprovalRequestDto(approvalRequest);
+        return CustomMapper.MapToApprovalRequestDto(approvalRequest);
     }
 
     public async Task<GetApprovalRequestDto> UpdateApprovalRequestAsync(int requestId, UpdateApprovalRequestDto approvalRequest)
@@ -40,12 +40,12 @@ public class ApprovalRequestService : IApprovalRequestService
         var curStatus = approvalStatuses.Find(s => s.Id == approvalRequest.StatusId).Name;
         await HandleLeaveRequestAsync(prevRequest, prevStatus, curStatus);
 
-        var mappedApprovalRequest = MapToApprovalRequest(approvalRequest, prevRequest);
+        var mappedApprovalRequest = CustomMapper.MapToApprovalRequest(approvalRequest, prevRequest);
         var updatedApprovalRequest = await _approvalRequestRepository.UpdateApprovalRequestAsync(mappedApprovalRequest);
-        return MapToApprovalRequestDto(updatedApprovalRequest);
+        return CustomMapper.MapToApprovalRequestDto(updatedApprovalRequest);
     }
 
-    // private methods
+    // additional methods
     private static void ValidateRequestStatus(int id, string currentStatus, params string[] validStatuses)
     {
         if (!validStatuses.Contains(currentStatus))
@@ -72,55 +72,16 @@ public class ApprovalRequestService : IApprovalRequestService
             if (approvalRequests.All(ar => ar.Id == approvalRequest.Id || ar.Status.Name == "Approved"))
             {
                 var newStatusId = leaveStatuses.Find(s => s.Name == "Approved").Id;
-                var leaveRequest = LeaveRequestService.MapLeaveRequestStatus(approvalRequest.LeaveRequestId, newStatusId, prevRequest);
+                var leaveRequest = CustomMapper.MapLeaveRequestStatus(approvalRequest.LeaveRequestId, newStatusId, prevRequest);
                 await _leaveRequestRepository.UpdateLeaveRequestAsync(leaveRequest);
-                await _employeeRepository.UpdateEmployeeAsync(MapEmployeeBalance(employee, employee.OutOfOfficeBalance - workingDays));
+                await _employeeRepository.UpdateEmployeeAsync(CustomMapper.MapEmployeeBalance(employee, employee.OutOfOfficeBalance - workingDays));
             }
         }
         else if (prevStatus == "New" && curStatus == "Rejected")
         {
             var newStatusId = leaveStatuses.Find(s => s.Name == "Rejected").Id;
-            var leaveRequest = LeaveRequestService.MapLeaveRequestStatus(approvalRequest.LeaveRequestId, newStatusId, prevRequest);
+            var leaveRequest = CustomMapper.MapLeaveRequestStatus(approvalRequest.LeaveRequestId, newStatusId, prevRequest);
             var updatedLeaveRequest = await _leaveRequestRepository.UpdateLeaveRequestAsync(leaveRequest);
         }
-    }
-
-    private static Employee MapEmployeeBalance(Employee employee, decimal balance)
-    {
-        return new Employee
-        {
-            Id = employee.Id,
-            FullName = employee.FullName,
-            OutOfOfficeBalance = balance,
-            // Photo = employee.Photo,
-            PeoplePartnerId = employee.PeoplePartnerId,
-            PositionId = employee.PositionId,
-            StatusId = employee.StatusId,
-            SubdivisionId = employee.SubdivisionId,
-        };
-    }
-
-    private static GetApprovalRequestDto MapToApprovalRequestDto(ApprovalRequest approvalRequest)
-    {
-        return new GetApprovalRequestDto
-        {
-            Id = approvalRequest.Id,
-            Comment = approvalRequest.Comment,
-            Approver = new GetEmployeeDto { Id = approvalRequest.Approver.Id, FullName = approvalRequest.Approver.FullName },
-            LeaveRequest = LeaveRequestService.MapToLeaveRequestDto(approvalRequest.LeaveRequest),
-            Status = approvalRequest.Status,
-        };
-    }
-
-    private static ApprovalRequest MapToApprovalRequest(UpdateApprovalRequestDto approvalRequest, ApprovalRequest prevApprovalRequest)
-    {
-        return new ApprovalRequest
-        {
-            Id = prevApprovalRequest.Id,
-            Comment = approvalRequest.Comment,
-            ApproverId = prevApprovalRequest.ApproverId,
-            LeaveRequestId = prevApprovalRequest.LeaveRequestId,
-            StatusId = approvalRequest.StatusId,
-        };
     }
 }

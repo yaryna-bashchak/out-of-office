@@ -21,13 +21,13 @@ public class LeaveRequestService : ILeaveRequestService
     public async Task<List<GetLeaveRequestDto>> GetAllLeaveRequestsAsync()
     {
         var leaveRequests = await _leaveRequestRepository.GetAllLeaveRequestsAsync();
-        return leaveRequests.Select(lr => MapToLeaveRequestDto(lr)).ToList();
+        return leaveRequests.Select(lr => CustomMapper.MapToLeaveRequestDto(lr)).ToList();
     }
 
     public async Task<GetLeaveRequestDto> GetLeaveRequestByIdAsync(int id)
     {
         var leaveRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(id);
-        return MapToLeaveRequestDto(leaveRequest);
+        return CustomMapper.MapToLeaveRequestDto(leaveRequest);
     }
 
     public async Task<GetLeaveRequestDto> AddLeaveRequestAsync(AddLeaveRequestDto leaveRequestDto)
@@ -43,7 +43,7 @@ public class LeaveRequestService : ILeaveRequestService
         }
 
         // map LeaveRequestDto to LeaveRequest
-        var mappedLeaveRequest = MapToLeaveRequest(leaveRequestDto);
+        var mappedLeaveRequest = CustomMapper.MapToLeaveRequest(leaveRequestDto);
 
         // set status to "New"
         var statuses = await _leaveRequestRepository.GetAllStatusesAsync();
@@ -52,7 +52,7 @@ public class LeaveRequestService : ILeaveRequestService
 
         // create LeaveRequest
         var createdLeaveRequest = await _leaveRequestRepository.AddLeaveRequestAsync(mappedLeaveRequest);
-        return MapToLeaveRequestDto(createdLeaveRequest);
+        return CustomMapper.MapToLeaveRequestDto(createdLeaveRequest);
     }
 
     public async Task<GetLeaveRequestDto> UpdateLeaveRequestInfoAsync(int id, UpdateLeaveRequestDto leaveRequestDto)
@@ -69,10 +69,10 @@ public class LeaveRequestService : ILeaveRequestService
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
         ValidateOutOfOfficeBalance(employee.OutOfOfficeBalance, workingDays);
 
-        var mappedLeaveRequest = MapToLeaveRequest(id, leaveRequestDto);
+        var mappedLeaveRequest = CustomMapper.MapToLeaveRequest(id, leaveRequestDto);
         var updatedLeaveRequest = await _leaveRequestRepository.UpdateLeaveRequestAsync(mappedLeaveRequest);
 
-        return MapToLeaveRequestDto(updatedLeaveRequest);
+        return CustomMapper.MapToLeaveRequestDto(updatedLeaveRequest);
     }
 
     public async Task<GetLeaveRequestDto> UpdateLeaveRequestStatusAsync(int requestId, int statusId)
@@ -84,15 +84,15 @@ public class LeaveRequestService : ILeaveRequestService
 
         ValidateRequestStatus(requestId, prevStatus, "New", "Submitted");
 
-        var leaveRequest = MapLeaveRequestStatus(requestId, statusId, prevRequest);
+        var leaveRequest = CustomMapper.MapLeaveRequestStatus(requestId, statusId, prevRequest);
         var updatedLeaveRequest = await _leaveRequestRepository.UpdateLeaveRequestAsync(leaveRequest);
 
         await HandleApprovalRequestsAsync(requestId, prevStatus, curStatus, prevRequest.EmployeeId);
 
-        return MapToLeaveRequestDto(updatedLeaveRequest);
+        return CustomMapper.MapToLeaveRequestDto(updatedLeaveRequest);
     }
 
-    // private methods
+    // additional methods
     public static decimal CalculateWorkingDaysAsync(int requestTypeId, int? hours, DateTime startDate, DateTime endDate, List<RequestType> requestTypes)
     {
         var partialDayTypeId = requestTypes.Find(rt => rt.Name == "Partial day").Id;
@@ -132,22 +132,6 @@ public class LeaveRequestService : ILeaveRequestService
         {
             throw new InvalidOperationException($"Current OutOfOfficeBalance ({balance} days) is less than the specified number of days ({requiredDays} days).");
         }
-    }
-
-    public static LeaveRequest MapLeaveRequestStatus(int leaveRequestId, int statusId, LeaveRequest prevLeaveRequest)
-    {
-        return new LeaveRequest
-        {
-            Id = leaveRequestId,
-            StartDate = prevLeaveRequest.StartDate,
-            EndDate = prevLeaveRequest.EndDate,
-            Hours = prevLeaveRequest.Hours,
-            Comment = prevLeaveRequest.Comment,
-            EmployeeId = prevLeaveRequest.EmployeeId,
-            AbsenceReasonId = prevLeaveRequest.AbsenceReasonId,
-            RequestTypeId = prevLeaveRequest.RequestTypeId,
-            StatusId = statusId,
-        };
     }
 
     private async Task HandleApprovalRequestsAsync(int id, string prevStatus, string curStatus, int employeeId)
@@ -193,62 +177,9 @@ public class LeaveRequestService : ILeaveRequestService
 
         foreach (var approvalRequest in approvalRequests)
         {
-            var updatedApprovalRequest = new ApprovalRequest
-            {
-                Id = approvalRequest.Id,
-                Comment = approvalRequest.Comment,
-                ApproverId = approvalRequest.ApproverId,
-                LeaveRequestId = approvalRequest.LeaveRequestId,
-                StatusId = newStatusId
-            };
-
+            var updatedApprovalRequest = CustomMapper.MapApprovalRequestStatus(newStatusId, approvalRequest);
             await _approvalRequestRepository.UpdateApprovalRequestAsync(updatedApprovalRequest);
         }
-    }
-
-    public static GetLeaveRequestDto MapToLeaveRequestDto(LeaveRequest leaveRequest)
-    {
-        return new GetLeaveRequestDto
-        {
-            Id = leaveRequest.Id,
-            StartDate = leaveRequest.StartDate,
-            EndDate = leaveRequest.EndDate,
-            Hours = leaveRequest.Hours,
-            Comment = leaveRequest.Comment,
-            Employee = new GetEmployeeDto { Id = leaveRequest.EmployeeId, FullName = leaveRequest.Employee.FullName },
-            AbsenceReason = leaveRequest.AbsenceReason,
-            RequestType = leaveRequest.RequestType,
-            Status = leaveRequest.Status,
-        };
-    }
-
-    private static LeaveRequest MapToLeaveRequest(AddLeaveRequestDto leaveRequestDto)
-    {
-        return new LeaveRequest
-        {
-            StartDate = leaveRequestDto.StartDate,
-            EndDate = leaveRequestDto.EndDate,
-            Hours = leaveRequestDto.Hours,
-            Comment = leaveRequestDto.Comment,
-            EmployeeId = leaveRequestDto.EmployeeId,
-            AbsenceReasonId = leaveRequestDto.AbsenceReasonId,
-            RequestTypeId = leaveRequestDto.RequestTypeId,
-        };
-    }
-
-    private static LeaveRequest MapToLeaveRequest(int id, UpdateLeaveRequestDto leaveRequestDto)
-    {
-        return new LeaveRequest
-        {
-            Id = id,
-            StartDate = leaveRequestDto.StartDate,
-            EndDate = leaveRequestDto.EndDate,
-            Hours = leaveRequestDto.Hours,
-            Comment = leaveRequestDto.Comment,
-            EmployeeId = leaveRequestDto.EmployeeId,
-            AbsenceReasonId = leaveRequestDto.AbsenceReasonId,
-            RequestTypeId = leaveRequestDto.RequestTypeId,
-        };
     }
 }
 
