@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Repositories;
@@ -134,6 +134,24 @@ public class EmployeeRepository : IEmployeeRepository
             {
                 throw new InvalidOperationException("Invalid foreign key. Please check the details and try again.");
             }
+        }
+    }
+
+    public async Task<List<int>> GetAllProjectManagerIdsOfEmployeeAsync(int employeeId)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT p.ProjectManagerID
+                FROM ProjectEmployees pe
+                LEFT JOIN Employees e ON pe.EmployeeID = e.ID
+                LEFT JOIN Projects p ON pe.ProjectID = p.ID
+                WHERE e.ID = @Id;";
+
+            var projectManagerIds = await connection.QueryAsync<int>(query, new { Id = employeeId });
+
+            return projectManagerIds.ToList();
         }
     }
 }

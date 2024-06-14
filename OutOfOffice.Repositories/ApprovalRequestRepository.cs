@@ -1,4 +1,4 @@
-using Dapper;
+﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Repositories;
@@ -143,6 +143,21 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
             var statuses = await connection.QueryAsync<ApprovalRequestStatus>(query);
 
             return statuses.ToList();
+        }
+    }
+
+    public async Task<List<ApprovalRequest>> GetAllApprovalRequestsByLeaveRequestIdAsync(int leaveRequestId)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT ar.*
+                FROM ApprovalRequests ar
+                WHERE ar.LeaveRequestID = @LeaveRequestId";
+
+            var approvalRequests = await connection.QueryAsync<ApprovalRequest>(query, new { LeaveRequestId = leaveRequestId });
+            return approvalRequests.ToList();
         }
     }
 }

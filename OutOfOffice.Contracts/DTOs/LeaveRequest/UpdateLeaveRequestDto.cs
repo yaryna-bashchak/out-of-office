@@ -15,5 +15,4 @@ public class UpdateLeaveRequestDto
     public int AbsenceReasonId { get; set; }
     public int EmployeeId { get; set; }
     public int RequestTypeId { get; set; }
-    public int StatusId { get; set; }
 }

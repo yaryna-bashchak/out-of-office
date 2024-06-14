@@ -8,4 +8,6 @@ public interface IApprovalRequestRepository
     Task<ApprovalRequest> GetApprovalRequestByIdAsync(int id);
     Task<ApprovalRequest> AddApprovalRequestAsync(ApprovalRequest approvalRequest);
     Task<ApprovalRequest> UpdateApprovalRequestAsync(ApprovalRequest approvalRequest);
+    Task<List<ApprovalRequestStatus>> GetAllStatusesAsync();
+    Task<List<ApprovalRequest>> GetAllApprovalRequestsByLeaveRequestIdAsync(int leaveRequestId);
 }

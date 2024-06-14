@@ -70,7 +70,7 @@ public class LeaveRequestController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<GetLeaveRequestDto>> UpdateLeaveRequestAsync(int id, [FromBody] UpdateLeaveRequestDto updatedLeaveRequestDto)
+    public async Task<ActionResult<GetLeaveRequestDto>> UpdateLeaveRequestInfoAsync(int id, [FromBody] UpdateLeaveRequestDto updatedLeaveRequestDto)
     {
         var validationResult = ValidateLeaveRequest(updatedLeaveRequestDto.StartDate, updatedLeaveRequestDto.EndDate, updatedLeaveRequestDto.Hours);
         if (validationResult != null)
@@ -78,7 +78,29 @@ public class LeaveRequestController : ControllerBase
 
         try
         {
-            var updatedLeaveRequest = await _leaveRequestService.UpdateLeaveRequestAsync(id, updatedLeaveRequestDto);
+            var updatedLeaveRequest = await _leaveRequestService.UpdateLeaveRequestInfoAsync(id, updatedLeaveRequestDto);
+            return Ok(updatedLeaveRequest);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpPut("{id}/{statusId}")]
+    public async Task<ActionResult<GetLeaveRequestDto>> UpdateLeaveRequestStatusAsync(int id, int statusId)
+    {
+        try
+        {
+            var updatedLeaveRequest = await _leaveRequestService.UpdateLeaveRequestStatusAsync(id, statusId);
             return Ok(updatedLeaveRequest);
         }
         catch (KeyNotFoundException ex)
