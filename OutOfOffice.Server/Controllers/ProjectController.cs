@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OutOfOffice.Contracts.DTOs;
+using OutOfOffice.Contracts.DTOs.Project;
 using OutOfOffice.Interfaces.Services;
 
 namespace OutOfOffice.Server.Controllers;
@@ -50,7 +51,7 @@ public class ProjectController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<GetProjectDto>> AddProjectAsync([FromBody] AddProjectDto project)
     {
-        var validationResult = ValidateProject(project.StartDate, project.EndDate);
+        var validationResult = ValidateDate(project.StartDate, project.EndDate);
         if (validationResult != null)
             return validationResult;
 
@@ -72,7 +73,7 @@ public class ProjectController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<GetProjectDto>> UpdateProjectAsync(int id, [FromBody] UpdateProjectDto project)
     {
-        var validationResult = ValidateProject(project.StartDate, project.EndDate);
+        var validationResult = ValidateDate(project.StartDate, project.EndDate);
         if (validationResult != null)
             return validationResult;
 
@@ -95,7 +96,47 @@ public class ProjectController : ControllerBase
         }
     }
 
-    private ActionResult ValidateProject(DateTime startDate, DateTime? endDate)
+    [HttpPost("addEmployeeToProject")]
+    public async Task<ActionResult> AddEmployeeToProjectAsync([FromBody] ProjectEmployeeDto projectEmployeeDto)
+    {
+        ValidateDate(projectEmployeeDto.StartDate, projectEmployeeDto.EndDate);
+
+        try
+        {
+            await _projectService.AddEmployeeToProjectAsync(projectEmployeeDto);
+            return Ok();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpPut("updateEmployeeInProject")]
+    public async Task<ActionResult> UpdateEmployeeInProjectAsync([FromBody] ProjectEmployeeDto projectEmployeeDto)
+    {
+        ValidateDate(projectEmployeeDto.StartDate, projectEmployeeDto.EndDate);
+
+        try
+        {
+            await _projectService.UpdateEmployeeInProjectAsync(projectEmployeeDto);
+            return Ok();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    private ActionResult ValidateDate(DateTime startDate, DateTime? endDate)
     {
         if (endDate != null && endDate < startDate)
             return BadRequest("EndDate must be greater than or equal to StartDate.");

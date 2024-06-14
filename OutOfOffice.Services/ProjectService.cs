@@ -1,4 +1,5 @@
 using OutOfOffice.Contracts.DTOs;
+using OutOfOffice.Contracts.DTOs.Project;
 using OutOfOffice.Interfaces.Repositories;
 using OutOfOffice.Interfaces.Services;
 
@@ -72,5 +73,17 @@ public class ProjectService : IProjectService
         var project = CustomMapper.MapToProject(id, projectDto);
         var updatedProject = await _projectRepository.UpdateProjectAsync(project);
         return CustomMapper.MapToProjectDto(updatedProject);
+    }
+
+    public async Task AddEmployeeToProjectAsync(ProjectEmployeeDto projectEmployeeDto)
+    {
+        var projectEmployee = CustomMapper.MapToProjectEmployee(projectEmployeeDto);
+        await _projectRepository.AddEmployeeToProjectAsync(projectEmployee);
+    }
+
+    public async Task UpdateEmployeeInProjectAsync(ProjectEmployeeDto projectEmployeeDto)
+    {
+        var projectEmployee = CustomMapper.MapToProjectEmployee(projectEmployeeDto);
+        await _projectRepository.UpdateEmployeeInProjectAsync(projectEmployee);
     }
 }

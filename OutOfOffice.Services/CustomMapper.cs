@@ -1,4 +1,5 @@
 using OutOfOffice.Contracts.DTOs;
+using OutOfOffice.Contracts.DTOs.Project;
 using OutOfOffice.Contracts.Models;
 
 namespace OutOfOffice.Services;
@@ -131,7 +132,7 @@ public static class CustomMapper
             StatusId = statusId
         };
     }
-    
+
     public static Employee MapEmployeeBalance(Employee employee, decimal balance)
     {
         return new Employee
@@ -185,7 +186,7 @@ public static class CustomMapper
             Members = new List<GetEmployeeDto>()
         };
     }
-    
+
     public static Project MapToProject(AddProjectDto project)
     {
         return new Project
@@ -198,7 +199,7 @@ public static class CustomMapper
             Comment = project.Comment
         };
     }
-        
+
     public static Project MapToProject(int id, UpdateProjectDto project)
     {
         return new Project
@@ -210,6 +211,17 @@ public static class CustomMapper
             ProjectManagerId = project.ProjectManagerId,
             StatusId = project.StatusId,
             Comment = project.Comment
+        };
+    }
+
+    public static ProjectEmployee MapToProjectEmployee(ProjectEmployeeDto projectEmployee)
+    {
+        return new ProjectEmployee
+        {
+            StartDate = projectEmployee.StartDate,
+            EndDate = projectEmployee.EndDate,
+            ProjectId = projectEmployee.ProjectId,
+            EmployeeId = projectEmployee.EmployeeId,
         };
     }
 }

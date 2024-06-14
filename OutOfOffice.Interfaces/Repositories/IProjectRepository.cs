@@ -8,6 +8,6 @@ public interface IProjectRepository
     Task<Project> GetProjectByIdAsync(int id);
     Task<Project> AddProjectAsync(Project project);
     Task<Project> UpdateProjectAsync(Project project);
-    Task<Project> AddEmployeeToProjectAsync(ProjectEmployee newProjectEmployee);
-    Task<Project> UpdateEmployeeInProjectAsync(ProjectEmployee updatedProjectEmployee);
+    Task AddEmployeeToProjectAsync(ProjectEmployee newProjectEmployee);
+    Task UpdateEmployeeInProjectAsync(ProjectEmployee updatedProjectEmployee);
 }

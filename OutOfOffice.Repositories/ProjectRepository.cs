@@ -130,13 +130,45 @@ public class ProjectRepository : IProjectRepository
         }
     }
 
-    public Task<Project> AddEmployeeToProjectAsync(ProjectEmployee newProjectEmployee)
+    public async Task AddEmployeeToProjectAsync(ProjectEmployee newProjectEmployee)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                INSERT INTO ProjectEmployees (ProjectId, EmployeeId, StartDate, EndDate)
+                VALUES (@ProjectId, @EmployeeId, @StartDate, @EndDate);";
+
+            try
+            {
+                await connection.ExecuteAsync(query, newProjectEmployee);
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException("Invalid foreign key. Please check the project or employee details and try again.");
+            }
+        }
     }
 
-    public Task<Project> UpdateEmployeeInProjectAsync(ProjectEmployee updatedProjectEmployee)
+    public async Task UpdateEmployeeInProjectAsync(ProjectEmployee updatedProjectEmployee)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                UPDATE ProjectEmployees
+                SET StartDate = @StartDate, 
+                    EndDate = @EndDate
+                WHERE ProjectId = @ProjectId AND EmployeeId = @EmployeeId;";
+
+            try
+            {
+                await connection.ExecuteAsync(query, updatedProjectEmployee);
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException("Invalid foreign key. Please check the project or employee details and try again.");
+            }
+        }
     }
 }
