@@ -1,4 +1,4 @@
-﻿using OutOfOffice.Contracts.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace OutOfOffice.Contracts.DTOs;
 
