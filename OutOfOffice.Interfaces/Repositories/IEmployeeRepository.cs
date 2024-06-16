@@ -13,4 +13,5 @@ public interface IEmployeeRepository
     Task<List<Subdivision>> GetAllSubdivisionsAsync();
     Task<List<Position>> GetAllPositionsAsync();
     Task<List<EmployeeStatus>> GetAllStatusesAsync();
+    Task<List<Employee>> GetAllEmployeesByPositionAsync(string positionName);
 }

@@ -54,5 +54,11 @@ public class EmployeeService : IEmployeeService
     {
         return await _employeeRepository.GetAllStatusesAsync();
     }
+
+    public async Task<List<GetEmployeeDto>> GetAllEmployeesByPositionAsync(string positionName)
+    {
+        var employees = await _employeeRepository.GetAllEmployeesByPositionAsync(positionName);
+        return employees.Select(e => CustomMapper.MapToEmployeeDto(e)).ToList();
+    }
 }
 

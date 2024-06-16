@@ -135,4 +135,32 @@ public class EmployeesController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
+
+    [HttpGet("hr-managers")]
+    public async Task<ActionResult<List<GetEmployeeDto>>> GetAllHRManagersAsync()
+    {
+        try
+        {
+            var employees = await _employeeService.GetAllEmployeesByPositionAsync("HR Manager");
+            return Ok(employees);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("project-managers")]
+    public async Task<ActionResult<List<GetEmployeeDto>>> GetAllProjectManagersAsync()
+    {
+        try
+        {
+            var employees = await _employeeService.GetAllEmployeesByPositionAsync("Project Manager");
+            return Ok(employees);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 }

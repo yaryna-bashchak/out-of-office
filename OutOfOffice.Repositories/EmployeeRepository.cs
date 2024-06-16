@@ -235,5 +235,40 @@ public class EmployeeRepository : IEmployeeRepository
             return statuses.ToList();
         }
     }
+
+    public async Task<List<Employee>> GetAllEmployeesByPositionAsync(string positionName)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.Photo, e.PositionId, e.StatusId, e.SubdivisionId, e.PeoplePartnerId,
+                   p.Id, p.Name,
+                   s.Id, s.Name,
+                   sub.Id, sub.Name,
+                   pp.Id, pp.FullName
+                FROM Employees e
+                LEFT JOIN Positions p ON e.PositionId = p.Id
+                LEFT JOIN EmployeeStatuses s ON e.StatusId = s.Id
+                LEFT JOIN Subdivisions sub ON e.SubdivisionId = sub.Id
+                LEFT JOIN Employees pp ON e.PeoplePartnerId = pp.Id
+                WHERE p.Name = @Position";
+
+            var employees = await connection.QueryAsync<Employee, Position, EmployeeStatus, Subdivision, Employee, Employee>(
+                query,
+                (employee, position, status, subdivision, peoplePartner) =>
+                {
+                    employee.Position = position;
+                    employee.Status = status;
+                    employee.Subdivision = subdivision;
+                    employee.PeoplePartner = peoplePartner;
+                    return employee;
+                },
+                new { Position = positionName },
+                splitOn: "Id");
+
+            return employees.ToList();
+        }
+    }
 }
 
