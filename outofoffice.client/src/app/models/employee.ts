@@ -28,3 +28,13 @@ export interface Subdivision {
   id: number
   name: string
 }
+
+export interface EmployeePayload {
+  fullName: string
+  outOfOfficeBalance: number
+  positionId: number
+  statusId: number
+  subdivisionId: number
+  photo: string | null
+  peoplePartnerId: number | null
+}

@@ -20,6 +20,8 @@ const Employee = {
     getSubdivisions: () => requests.get('employees/subdivisions'),
     getPositions: () => requests.get('employees/positions'),
     getStatuses: () => requests.get('employees/statuses'),
+    getHRManagers: () => requests.get('employees/hr-managers'),
+    getProjectManagers: () => requests.get('employees/project-managers'),
 }
 
 const LeaveRequest = {
