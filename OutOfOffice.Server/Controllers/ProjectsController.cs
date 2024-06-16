@@ -8,10 +8,10 @@ namespace OutOfOffice.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProjectController : ControllerBase
+public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _projectService;
-    public ProjectController(IProjectService projectService)
+    public ProjectsController(IProjectService projectService)
     {
         _projectService = projectService;
 

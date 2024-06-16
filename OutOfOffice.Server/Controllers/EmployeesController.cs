@@ -7,11 +7,11 @@ namespace OutOfOffice.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class EmployeeController : ControllerBase
+public class EmployeesController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
 
-    public EmployeeController(IEmployeeService employeeService)
+    public EmployeesController(IEmployeeService employeeService)
     {
         _employeeService = employeeService;
     }

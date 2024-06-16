@@ -7,11 +7,11 @@ namespace OutOfOffice.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class LeaveRequestController : ControllerBase
+public class LeaveRequestsController : ControllerBase
 {
     private readonly ILeaveRequestService _leaveRequestService;
 
-    public LeaveRequestController(ILeaveRequestService leaveRequestService)
+    public LeaveRequestsController(ILeaveRequestService leaveRequestService)
     {
         _leaveRequestService = leaveRequestService;
     }

@@ -7,11 +7,11 @@ namespace OutOfOffice.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ApprovalRequestController : ControllerBase
+public class ApprovalRequestsController : ControllerBase
 {
     private readonly IApprovalRequestService _approvalRequestService;
 
-    public ApprovalRequestController(IApprovalRequestService approvalRequestService)
+    public ApprovalRequestsController(IApprovalRequestService approvalRequestService)
     {
         _approvalRequestService = approvalRequestService;
     }
