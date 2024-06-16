@@ -97,7 +97,7 @@ public class ProjectsController : ControllerBase
         }
     }
 
-    [HttpPost("addEmployeeToProject")]
+    [HttpPost("addEmployee")]
     public async Task<ActionResult> AddEmployeeToProjectAsync([FromBody] ProjectEmployeeDto projectEmployeeDto)
     {
         ValidateDate(projectEmployeeDto.StartDate, projectEmployeeDto.EndDate);
@@ -117,7 +117,7 @@ public class ProjectsController : ControllerBase
         }
     }
 
-    [HttpPut("updateEmployeeInProject")]
+    [HttpPut("updateEmployee")]
     public async Task<ActionResult> UpdateEmployeeInProjectAsync([FromBody] ProjectEmployeeDto projectEmployeeDto)
     {
         ValidateDate(projectEmployeeDto.StartDate, projectEmployeeDto.EndDate);
