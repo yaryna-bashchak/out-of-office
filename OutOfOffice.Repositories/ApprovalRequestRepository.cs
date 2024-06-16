@@ -9,11 +9,13 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
 {
     private readonly string _connectionString;
     private readonly ILeaveRequestRepository _leaveRequestRepository;
+    private readonly IEmployeeRepository _employeeRepository;
 
     public ApprovalRequestRepository(string connectionString)
     {
         _connectionString = connectionString;
         _leaveRequestRepository = new LeaveRequestRepository(_connectionString);
+        _employeeRepository = new EmployeeRepository(_connectionString);
     }
 
     public async Task<List<ApprovalRequest>> GetAllApprovalRequestsAsync()
@@ -23,17 +25,14 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
             await connection.OpenAsync();
             var query = @"
                 SELECT ar.Id, ar.Comment, ar.LeaveRequestId, ar.ApproverID, ar.StatusId,
-                    e.Id, e.FullName,
                     s.Id, s.Name
                 FROM ApprovalRequests ar
-                LEFT JOIN Employees e ON ar.ApproverID = e.Id
                 LEFT JOIN ApprovalRequestStatuses s ON ar.StatusId = s.Id";
 
-            var approvalRequests = await connection.QueryAsync<ApprovalRequest, Employee, ApprovalRequestStatus, ApprovalRequest>(
+            var approvalRequests = await connection.QueryAsync<ApprovalRequest, ApprovalRequestStatus, ApprovalRequest>(
                 query,
-                (approvalRequest, approver, approvalRequestStatus) =>
+                (approvalRequest, approvalRequestStatus) =>
                 {
-                    approvalRequest.Approver = approver;
                     approvalRequest.Status = approvalRequestStatus;
                     return approvalRequest;
                 },
@@ -41,6 +40,7 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
 
             foreach (var approvalRequest in approvalRequests)
             {
+                approvalRequest.Approver = await _employeeRepository.GetEmployeeByIdAsync(approvalRequest.ApproverId);
                 approvalRequest.LeaveRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(approvalRequest.LeaveRequestId);
             }
 
@@ -55,18 +55,15 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
             await connection.OpenAsync();
             var query = @"
                 SELECT ar.Id, ar.Comment, ar.LeaveRequestId, ar.ApproverID, ar.StatusId,
-                    e.Id, e.FullName,
                     s.Id, s.Name
                 FROM ApprovalRequests ar
-                LEFT JOIN Employees e ON ar.ApproverID = e.Id
                 LEFT JOIN ApprovalRequestStatuses s ON ar.StatusId = s.Id
                 WHERE ar.Id = @Id";
 
-            var approvalRequests = await connection.QueryAsync<ApprovalRequest, Employee, ApprovalRequestStatus, ApprovalRequest>(
+            var approvalRequests = await connection.QueryAsync<ApprovalRequest, ApprovalRequestStatus, ApprovalRequest>(
                 query,
-                (approvalRequest, approver, approvalRequestStatus) =>
+                (approvalRequest, approvalRequestStatus) =>
                 {
-                    approvalRequest.Approver = approver;
                     approvalRequest.Status = approvalRequestStatus;
                     return approvalRequest;
                 },
@@ -79,6 +76,7 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
                 throw new KeyNotFoundException($"ApprovalRequest with ID {id} not found.");
             }
 
+            approvalRequest.Approver = await _employeeRepository.GetEmployeeByIdAsync(approvalRequest.ApproverId);
             approvalRequest.LeaveRequest = await _leaveRequestRepository.GetLeaveRequestByIdAsync(approvalRequest.LeaveRequestId);
             return approvalRequest;
         }

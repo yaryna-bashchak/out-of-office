@@ -69,7 +69,7 @@ public static class CustomMapper
             EndDate = leaveRequest.EndDate,
             Hours = leaveRequest.Hours,
             Comment = leaveRequest.Comment,
-            Employee = new GetEmployeeDto { Id = leaveRequest.EmployeeId, FullName = leaveRequest.Employee.FullName },
+            Employee = MapToEmployeeDto(leaveRequest.Employee),
             AbsenceReason = leaveRequest.AbsenceReason,
             RequestType = leaveRequest.RequestType,
             Status = leaveRequest.Status,
@@ -154,7 +154,7 @@ public static class CustomMapper
         {
             Id = approvalRequest.Id,
             Comment = approvalRequest.Comment,
-            Approver = new GetEmployeeDto { Id = approvalRequest.Approver.Id, FullName = approvalRequest.Approver.FullName },
+            Approver = MapToEmployeeDto(approvalRequest.Approver),
             LeaveRequest = MapToLeaveRequestDto(approvalRequest.LeaveRequest),
             Status = approvalRequest.Status,
         };

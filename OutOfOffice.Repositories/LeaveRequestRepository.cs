@@ -8,10 +8,12 @@ namespace OutOfOffice.Repositories;
 public class LeaveRequestRepository : ILeaveRequestRepository
 {
     private readonly string _connectionString;
+    private readonly IEmployeeRepository _employeeRepository;
 
     public LeaveRequestRepository(string connectionString)
     {
         _connectionString = connectionString;
+        _employeeRepository = new EmployeeRepository(_connectionString);
     }
 
     public async Task<List<LeaveRequest>> GetAllLeaveRequestsAsync()
@@ -21,27 +23,29 @@ public class LeaveRequestRepository : ILeaveRequestRepository
             await connection.OpenAsync();
             var query = @"
                 SELECT lr.Id, lr.StartDate, lr.EndDate, lr.Hours, lr.Comment, lr.EmployeeId, lr.AbsenceReasonId, lr.RequestTypeId, lr.StatusId,
-                   e.Id, e.FullName,
                    ar.Id, ar.Name,
                    rt.Id, rt.Name,
                    s.Id, s.Name
                 FROM LeaveRequests lr
-                LEFT JOIN Employees e ON lr.EmployeeId = e.Id
                 LEFT JOIN AbsenceReasons ar ON lr.AbsenceReasonId = ar.Id
                 LEFT JOIN RequestTypes rt ON lr.RequestTypeId = rt.Id
                 LEFT JOIN LeaveRequestStatuses s ON lr.StatusId = s.Id";
 
-            var leaveRequests = await connection.QueryAsync<LeaveRequest, Employee, AbsenceReason, RequestType, LeaveRequestStatus, LeaveRequest>(
+            var leaveRequests = await connection.QueryAsync<LeaveRequest, AbsenceReason, RequestType, LeaveRequestStatus, LeaveRequest>(
                 query,
-                (leaveRequest, employee, absenceReason, requestType, status) =>
+                (leaveRequest, absenceReason, requestType, status) =>
                 {
-                    leaveRequest.Employee = employee;
                     leaveRequest.AbsenceReason = absenceReason;
                     leaveRequest.RequestType = requestType;
                     leaveRequest.Status = status;
                     return leaveRequest;
                 },
                 splitOn: "Id");
+
+            foreach (var leaveRequest in leaveRequests)
+            {
+                leaveRequest.Employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequest.EmployeeId);
+            }
 
             return leaveRequests.ToList();
         }
@@ -54,22 +58,19 @@ public class LeaveRequestRepository : ILeaveRequestRepository
             await connection.OpenAsync();
             var query = @"
                 SELECT lr.Id, lr.StartDate, lr.EndDate, lr.Hours, lr.Comment, lr.EmployeeId, lr.AbsenceReasonId, lr.RequestTypeId, lr.StatusId,
-                   e.Id, e.FullName,
                    ar.Id, ar.Name,
                    rt.Id, rt.Name,
                    s.Id, s.Name
                 FROM LeaveRequests lr
-                LEFT JOIN Employees e ON lr.EmployeeId = e.Id
                 LEFT JOIN AbsenceReasons ar ON lr.AbsenceReasonId = ar.Id
                 LEFT JOIN RequestTypes rt ON lr.RequestTypeId = rt.Id
                 LEFT JOIN LeaveRequestStatuses s ON lr.StatusId = s.Id
                 WHERE lr.Id = @Id";
 
-            var leaveRequest = await connection.QueryAsync<LeaveRequest, Employee, AbsenceReason, RequestType, LeaveRequestStatus, LeaveRequest>(
+            var leaveRequests = await connection.QueryAsync<LeaveRequest, AbsenceReason, RequestType, LeaveRequestStatus, LeaveRequest>(
                 query,
-                (leaveRequest, employee, absenceReason, requestType, status) =>
+                (leaveRequest, absenceReason, requestType, status) =>
                 {
-                    leaveRequest.Employee = employee;
                     leaveRequest.AbsenceReason = absenceReason;
                     leaveRequest.RequestType = requestType;
                     leaveRequest.Status = status;
@@ -78,12 +79,15 @@ public class LeaveRequestRepository : ILeaveRequestRepository
                 new { Id = id },
                 splitOn: "Id");
 
-            if (leaveRequest.FirstOrDefault() == null)
+            var leaveRequest = leaveRequests.FirstOrDefault();
+            if (leaveRequest == null)
             {
                 throw new KeyNotFoundException($"LeaveRequest with ID {id} not found.");
             }
 
-            return leaveRequest.FirstOrDefault();
+            leaveRequest.Employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequest.EmployeeId);
+
+            return leaveRequest;
         }
     }
 
