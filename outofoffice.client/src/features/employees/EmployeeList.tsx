@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import EmployeeContext from '../../app/context/EmployeeContext';
-import { Box, Typography, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, styled } from '@mui/material';
+import { Box, Typography, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, styled, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const BoldTableCell = styled(TableCell)({
@@ -8,6 +8,7 @@ const BoldTableCell = styled(TableCell)({
 });
 
 const EmployeeList = () => {
+    const theme = useTheme();
     const context = useContext(EmployeeContext);
     const navigate = useNavigate();
 
@@ -32,7 +33,7 @@ const EmployeeList = () => {
     return (
         <>
             <Box display='flex' justifyContent='space-between'>
-                <Typography sx={{ p: 2 }} variant='h4'>Employees</Typography>
+                <Typography sx={{ p: 2, fontWeight: 'bold', color: theme.palette.primary.main }} variant='h4'>Employees</Typography>
                 <Button onClick={() => handleAddEmployee()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>
             </Box>
             <TableContainer component={Paper}>

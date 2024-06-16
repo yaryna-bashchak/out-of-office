@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import EmployeeContext from '../../app/context/EmployeeContext';
-import { Box, Typography, Button, Grid } from '@mui/material';
+import { Box, Typography, Button, Grid, useTheme } from '@mui/material';
 import { Employee, EmployeePayload } from '../../app/models/employee';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -20,6 +20,7 @@ const transformEmployees = (employees: Employee[]): TransformedEmployee[] => {
 };
 
 const EmployeeEditor = () => {
+    const theme = useTheme();
     const context = useContext(EmployeeContext);
     const { id } = useParams<{ id: string | undefined }>();
     const navigate = useNavigate();
@@ -72,7 +73,7 @@ const EmployeeEditor = () => {
 
     return (
         <Box sx={{ p: 4 }}>
-            <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+            <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: theme.palette.primary.main }}>
                 {id ? 'Edit Employee' : 'Add Employee'}
             </Typography>
             <form onSubmit={handleSubmit(onSubmit)}>
