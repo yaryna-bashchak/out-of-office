@@ -191,5 +191,49 @@ public class EmployeeRepository : IEmployeeRepository
             return employees.ToList();
         }
     }
+    public async Task<List<Subdivision>> GetAllSubdivisionsAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM Subdivisions";
+
+            var subdivisions = await connection.QueryAsync<Subdivision>(query);
+
+            return subdivisions.ToList();
+        }
+    }
+
+    public async Task<List<Position>> GetAllPositionsAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM Positions";
+
+            var positions = await connection.QueryAsync<Position>(query);
+
+            return positions.ToList();
+        }
+    }
+
+    public async Task<List<EmployeeStatus>> GetAllStatusesAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM EmployeeStatuses";
+
+            var statuses = await connection.QueryAsync<EmployeeStatus>(query);
+
+            return statuses.ToList();
+        }
+    }
 }
 

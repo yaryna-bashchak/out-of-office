@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OutOfOffice.Contracts.DTOs;
+using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Services;
 
 namespace OutOfOffice.Server.Controllers;
@@ -110,6 +111,48 @@ public class LeaveRequestController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("statuses")]
+    public async Task<ActionResult<List<LeaveRequestStatus>>> GetAllStatusesAsync()
+    {
+        try
+        {
+            var statuses = await _leaveRequestService.GetAllStatusesAsync();
+            return Ok(statuses);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("absenceReasons")]
+    public async Task<ActionResult<List<AbsenceReason>>> GetAllAbsenceReasonsAsync()
+    {
+        try
+        {
+            var absenceReasons = await _leaveRequestService.GetAllAbsenceReasonsAsync();
+            return Ok(absenceReasons);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("types")]
+    public async Task<ActionResult<List<RequestType>>> GetAllTypesAsync()
+    {
+        try
+        {
+            var types = await _leaveRequestService.GetAllTypesAsync();
+            return Ok(types);
         }
         catch (Exception ex)
         {

@@ -171,4 +171,34 @@ public class ProjectRepository : IProjectRepository
             }
         }
     }
+
+    public async Task<List<ProjectType>> GetAllTypesAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM ProjectTypes";
+
+            var projectTypes = await connection.QueryAsync<ProjectType>(query);
+
+            return projectTypes.ToList();
+        }
+    }
+
+    public async Task<List<ProjectStatus>> GetAllStatusesAsync()
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT Id, Name
+                FROM ProjectStatuses";
+
+            var projectStatuses = await connection.QueryAsync<ProjectStatus>(query);
+
+            return projectStatuses.ToList();
+        }
+    }
 }

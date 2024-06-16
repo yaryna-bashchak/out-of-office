@@ -12,4 +12,6 @@ public interface IProjectService
     Task<GetProjectDto> UpdateProjectAsync(int id, UpdateProjectDto projectDto);
     Task AddEmployeeToProjectAsync(ProjectEmployeeDto projectEmployee);
     Task UpdateEmployeeInProjectAsync(ProjectEmployeeDto projectEmployee);
+    Task<List<ProjectType>> GetAllTypesAsync();
+    Task<List<ProjectStatus>> GetAllStatusesAsync();
 }

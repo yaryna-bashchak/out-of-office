@@ -153,7 +153,7 @@ public class LeaveRequestRepository : ILeaveRequestRepository
         }
     }
 
-    public async Task<List<RequestType>> GetAllRequestTypesAsync()
+    public async Task<List<RequestType>> GetAllTypesAsync()
     {
         using (var connection = new SqlConnection(_connectionString))
         {

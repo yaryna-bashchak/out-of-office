@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OutOfOffice.Contracts.DTOs;
+using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Services;
 
 namespace OutOfOffice.Server.Controllers;
@@ -28,7 +29,7 @@ public class ApprovalRequestController : ControllerBase
             return StatusCode(500, ex.Message);
         }
     }
-    
+
     [HttpGet("{id}")]
     public async Task<ActionResult<GetApprovalRequestDto>> GetApprovalRequestByIdAsync(int id)
     {
@@ -62,6 +63,20 @@ public class ApprovalRequestController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("statuses")]
+    public async Task<ActionResult<List<ApprovalRequestStatus>>> GetAllStatusesAsync()
+    {
+        try
+        {
+            var statuses = await _approvalRequestService.GetAllStatusesAsync();
+            return Ok(statuses);
         }
         catch (Exception ex)
         {

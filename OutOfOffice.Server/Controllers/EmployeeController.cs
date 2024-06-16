@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OutOfOffice.Contracts.DTOs;
+using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Services;
 
 namespace OutOfOffice.Server.Controllers;
@@ -16,7 +17,7 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetEmployeeDto>>> GetAllEmployeesAsync()
+    public async Task<ActionResult<List<GetEmployeeDto>>> GetAllEmployeesAsync()
     {
         try
         {
@@ -86,6 +87,48 @@ public class EmployeeController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("subdivisions")]
+    public async Task<ActionResult<List<Subdivision>>> GetAllSubdivisionsAsync()
+    {
+        try
+        {
+            var subdivisions = await _employeeService.GetAllSubdivisionsAsync();
+            return Ok(subdivisions);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("positions")]
+    public async Task<ActionResult<List<Position>>> GetAllPositionsAsync()
+    {
+        try
+        {
+            var positions = await _employeeService.GetAllPositionsAsync();
+            return Ok(positions);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("statuses")]
+    public async Task<ActionResult<List<EmployeeStatus>>> GetAllStatusesAsync()
+    {
+        try
+        {
+            var statuses = await _employeeService.GetAllStatusesAsync();
+            return Ok(statuses);
         }
         catch (Exception ex)
         {

@@ -10,4 +10,7 @@ public interface IEmployeeRepository
     Task<Employee> UpdateEmployeeAsync(Employee employee);
     Task<List<int>> GetAllProjectManagerIdsOfEmployeeAsync(int employeeId);
     Task<List<Employee>> GetEmployeesByProjectIdAsync(int projectId);
+    Task<List<Subdivision>> GetAllSubdivisionsAsync();
+    Task<List<Position>> GetAllPositionsAsync();
+    Task<List<EmployeeStatus>> GetAllStatusesAsync();
 }

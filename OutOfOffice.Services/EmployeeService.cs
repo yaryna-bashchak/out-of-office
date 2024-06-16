@@ -39,5 +39,20 @@ public class EmployeeService : IEmployeeService
         var updatedEmployee = await _employeeRepository.UpdateEmployeeAsync(employee);
         return CustomMapper.MapToEmployeeDto(updatedEmployee);
     }
+
+    public async Task<List<Subdivision>> GetAllSubdivisionsAsync()
+    {
+        return await _employeeRepository.GetAllSubdivisionsAsync();
+    }
+
+    public async Task<List<Position>> GetAllPositionsAsync()
+    {
+        return await _employeeRepository.GetAllPositionsAsync();
+    }
+
+    public async Task<List<EmployeeStatus>> GetAllStatusesAsync()
+    {
+        return await _employeeRepository.GetAllStatusesAsync();
+    }
 }
 

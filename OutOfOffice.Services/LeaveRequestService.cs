@@ -33,7 +33,7 @@ public class LeaveRequestService : ILeaveRequestService
     public async Task<GetLeaveRequestDto> AddLeaveRequestAsync(AddLeaveRequestDto leaveRequestDto)
     {
         // check if the employee's OutOfOffice balance is sufficient to receive this leave request
-        var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync();
+        var requestTypes = await _leaveRequestRepository.GetAllTypesAsync();
         decimal workingDays = CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate, requestTypes);
 
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
@@ -63,7 +63,7 @@ public class LeaveRequestService : ILeaveRequestService
 
         ValidateRequestStatus(id, status, "New");
 
-        var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync(); 
+        var requestTypes = await _leaveRequestRepository.GetAllTypesAsync();
         decimal workingDays = CalculateWorkingDaysAsync(leaveRequestDto.RequestTypeId, leaveRequestDto.Hours, leaveRequestDto.StartDate, leaveRequestDto.EndDate, requestTypes);
 
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
@@ -90,6 +90,21 @@ public class LeaveRequestService : ILeaveRequestService
         await HandleApprovalRequestsAsync(requestId, prevStatus, curStatus, prevRequest.EmployeeId);
 
         return CustomMapper.MapToLeaveRequestDto(updatedLeaveRequest);
+    }
+
+    public async Task<List<AbsenceReason>> GetAllAbsenceReasonsAsync()
+    {
+        return await _leaveRequestRepository.GetAllAbsenceReasonsAsync();
+    }
+
+    public async Task<List<RequestType>> GetAllTypesAsync()
+    {
+        return await _leaveRequestRepository.GetAllTypesAsync();
+    }
+
+    public async Task<List<LeaveRequestStatus>> GetAllStatusesAsync()
+    {
+        return await _leaveRequestRepository.GetAllStatusesAsync();
     }
 
     // additional methods

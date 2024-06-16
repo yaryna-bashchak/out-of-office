@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OutOfOffice.Contracts.DTOs;
 using OutOfOffice.Contracts.DTOs.Project;
+using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Services;
 
 namespace OutOfOffice.Server.Controllers;
@@ -129,6 +130,34 @@ public class ProjectController : ControllerBase
         catch (InvalidOperationException ex)
         {
             return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("statuses")]
+    public async Task<ActionResult<List<ProjectStatus>>> GetAllStatusesAsync()
+    {
+        try
+        {
+            var statuses = await _projectService.GetAllStatusesAsync();
+            return Ok(statuses);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+    [HttpGet("types")]
+    public async Task<ActionResult<List<ProjectType>>> GetAllTypesAsync()
+    {
+        try
+        {
+            var types = await _projectService.GetAllTypesAsync();
+            return Ok(types);
         }
         catch (Exception ex)
         {

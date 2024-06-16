@@ -10,4 +10,6 @@ public interface IProjectRepository
     Task<Project> UpdateProjectAsync(Project project);
     Task AddEmployeeToProjectAsync(ProjectEmployee newProjectEmployee);
     Task UpdateEmployeeInProjectAsync(ProjectEmployee updatedProjectEmployee);
+    Task<List<ProjectType>> GetAllTypesAsync();
+    Task<List<ProjectStatus>> GetAllStatusesAsync();
 }

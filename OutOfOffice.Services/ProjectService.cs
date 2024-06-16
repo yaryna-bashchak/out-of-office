@@ -1,5 +1,6 @@
 using OutOfOffice.Contracts.DTOs;
 using OutOfOffice.Contracts.DTOs.Project;
+using OutOfOffice.Contracts.Models;
 using OutOfOffice.Interfaces.Repositories;
 using OutOfOffice.Interfaces.Services;
 
@@ -23,18 +24,7 @@ public class ProjectService : IProjectService
 
         foreach (var project in projects)
         {
-            var projectDto = new GetProjectDto
-            {
-                Id = project.Id,
-                StartDate = project.StartDate,
-                EndDate = project.EndDate,
-                Comment = project.Comment,
-                ProjectManager = CustomMapper.MapToEmployeeDto(project.ProjectManager),
-                ProjectType = project.ProjectType,
-                Status = project.Status,
-                Members = new List<GetEmployeeDto>()
-            };
-
+            var projectDto = CustomMapper.MapToProjectDto(project);
             var projectMembers = await _employeeRepository.GetEmployeesByProjectIdAsync(project.Id);
             foreach (var member in projectMembers)
             {
@@ -85,5 +75,15 @@ public class ProjectService : IProjectService
     {
         var projectEmployee = CustomMapper.MapToProjectEmployee(projectEmployeeDto);
         await _projectRepository.UpdateEmployeeInProjectAsync(projectEmployee);
+    }
+
+    public async Task<List<ProjectType>> GetAllTypesAsync()
+    {
+        return await _projectRepository.GetAllTypesAsync();
+    }
+
+    public async Task<List<ProjectStatus>> GetAllStatusesAsync()
+    {
+        return await _projectRepository.GetAllStatusesAsync();
     }
 }

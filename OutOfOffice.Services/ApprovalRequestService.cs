@@ -45,6 +45,11 @@ public class ApprovalRequestService : IApprovalRequestService
         return CustomMapper.MapToApprovalRequestDto(updatedApprovalRequest);
     }
 
+    public async Task<List<ApprovalRequestStatus>> GetAllStatusesAsync()
+    {
+        return await _approvalRequestRepository.GetAllStatusesAsync();
+    }
+
     // additional methods
     private static void ValidateRequestStatus(int id, string currentStatus, params string[] validStatuses)
     {
@@ -62,7 +67,7 @@ public class ApprovalRequestService : IApprovalRequestService
         if (prevStatus == "New" && curStatus == "Approved")
         {
             var employee = await _employeeRepository.GetEmployeeByIdAsync(approvalRequest.LeaveRequest.EmployeeId);
-            var requestTypes = await _leaveRequestRepository.GetAllRequestTypesAsync();
+            var requestTypes = await _leaveRequestRepository.GetAllTypesAsync();
             decimal workingDays = LeaveRequestService.CalculateWorkingDaysAsync(prevRequest.RequestTypeId, prevRequest.Hours, prevRequest.StartDate, prevRequest.EndDate, requestTypes);
 
             LeaveRequestService.ValidateOutOfOfficeBalance(employee.OutOfOfficeBalance, workingDays);

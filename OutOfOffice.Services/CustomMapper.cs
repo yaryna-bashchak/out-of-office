@@ -180,7 +180,7 @@ public static class CustomMapper
             StartDate = project.StartDate,
             EndDate = project.EndDate,
             Comment = project.Comment,
-            ProjectManager = CustomMapper.MapToEmployeeDto(project.ProjectManager),
+            ProjectManager = MapToEmployeeDto(project.ProjectManager),
             ProjectType = project.ProjectType,
             Status = project.Status,
             Members = new List<GetEmployeeDto>()
