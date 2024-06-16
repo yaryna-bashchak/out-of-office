@@ -7,6 +7,7 @@ import LeaveRequests from "../../features/leaveRequests/LeaveRequests";
 import Projects from "../../features/projects/Projects";
 import EmployeeList from "../../features/employees/EmployeeList";
 import EmployeeEditor from "../../features/employees/EmployeeEditor";
+import EmployeeDetails from "../../features/employees/EmployeeDetails";
 
 export const router = createBrowserRouter([
     {
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
         children: [
             { path: '', element: <HomePage /> },
             { path: 'employees', element: <EmployeeList /> },
+            { path: 'employees/:id', element: <EmployeeDetails /> },
             { path: 'employees/:id/edit', element: <EmployeeEditor /> },
             { path: 'employees/new', element: <EmployeeEditor /> },
             { path: 'leave-requests', element: <LeaveRequests /> },
