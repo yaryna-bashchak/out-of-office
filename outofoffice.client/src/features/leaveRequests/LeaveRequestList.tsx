@@ -57,6 +57,60 @@ const getStatusStyles = (status: string) => {
     }
 };
 
+const CancelButton: React.FC<{ leaveRequest: LeaveRequest; handleCancelLeaveRequest: (id: number) => void }> = ({
+    leaveRequest,
+    handleCancelLeaveRequest,
+}) => (
+    <Button
+        size="small"
+        variant="outlined"
+        color="error"
+        onClick={() => handleCancelLeaveRequest(leaveRequest.id)}
+        disabled={leaveRequest.status.name !== 'New' && leaveRequest.status.name !== 'Submitted'}
+        sx={{ width: '70px' }}
+    >
+        {leaveRequest.status.name === 'Cancelled' ? 'Cancelled' : 'Cancel'}
+    </Button>
+);
+
+const ViewButton: React.FC<{ leaveRequest: LeaveRequest; handleViewLeaveRequest: (id: number) => void }> = ({
+    leaveRequest,
+    handleViewLeaveRequest,
+}) => (
+    <Button size="small" onClick={() => handleViewLeaveRequest(leaveRequest.id)}>
+        View
+    </Button>
+);
+
+const EditButton: React.FC<{ leaveRequest: LeaveRequest; handleEditLeaveRequest: (id: number) => void }> = ({
+    leaveRequest,
+    handleEditLeaveRequest,
+}) => (
+    <Button
+        size="small"
+        onClick={() => handleEditLeaveRequest(leaveRequest.id)}
+        disabled={leaveRequest.status.name !== 'New'}
+    >
+        Edit
+    </Button>
+);
+
+const SubmitButton: React.FC<{ leaveRequest: LeaveRequest; handleSubmitLeaveRequest: (id: number) => void }> = ({
+    leaveRequest,
+    handleSubmitLeaveRequest,
+}) => (
+    <Button
+        size="small"
+        variant="contained"
+        color="success"
+        onClick={() => handleSubmitLeaveRequest(leaveRequest.id)}
+        disabled={leaveRequest.status.name !== 'New'}
+        sx={{ width: '70px' }}
+    >
+        {leaveRequest.status.name === 'New' ? 'Submit' : 'Submitted'}
+    </Button>
+);
+
 const LeaveRequestList = () => {
     const theme = useTheme();
     const context = useContext(LeaveRequestContext);
@@ -66,7 +120,7 @@ const LeaveRequestList = () => {
         throw new Error('LeaveRequestList must be used within a LeaveRequestProvider');
     }
 
-    const { leaveRequests } = context;
+    const { leaveRequests, editLeaveRequestStatus, statuses } = context;
 
     const [sortConfig, setSortConfig] = useState<{ key: keyof LeaveRequest | 'employee.fullName' | 'absenceReason.name' | 'requestType.name' | 'status.name'; direction: 'asc' | 'desc' }>({ key: 'id', direction: 'asc' });
 
@@ -127,11 +181,17 @@ const LeaveRequestList = () => {
     }
 
     function handleSubmitLeaveRequest(id: number): void {
-        navigate(`/leave-requests/${id}`);
+        const status = statuses.find(s => s.name === "Submitted");
+        if (status) {
+            editLeaveRequestStatus(id, status.id);
+        }
     }
 
     function handleCancelLeaveRequest(id: number): void {
-        navigate(`/leave-requests/${id}`);
+        const status = statuses.find(s => s.name === "Cancelled");
+        if (status) {
+            editLeaveRequestStatus(id, status.id);
+        }
     }
 
     const renderSortIndicator = (key: keyof LeaveRequest | 'employee.fullName' | 'absenceReason.name' | 'requestType.name' | 'status.name') => {
@@ -206,10 +266,10 @@ const LeaveRequestList = () => {
                                 <TableCell align='center'>{leaveRequest.hours}</TableCell>
                                 <TableCell><Typography align='center' sx={getStatusStyles(leaveRequest.status.name)}>{leaveRequest.status.name}</Typography></TableCell>
                                 <TableCell>
-                                    <Button size='small' variant='outlined' color='error' onClick={() => handleCancelLeaveRequest(leaveRequest.id)} disabled={leaveRequest.status.name !== "New" && leaveRequest.status.name !== "Submitted"}>{leaveRequest.status.name === 'Cancelled' ? 'Cancelled' : 'Cancel'}</Button>
-                                    <Button size='small' onClick={() => handleViewLeaveRequest(leaveRequest.id)}>View</Button>
-                                    <Button size='small' onClick={() => handleEditLeaveRequest(leaveRequest.id)} disabled={leaveRequest.status.name !== "New"}>Edit</Button>
-                                    <Button size='small' variant='contained' color='success' onClick={() => handleSubmitLeaveRequest(leaveRequest.id)} disabled={leaveRequest.status.name !== "New"}> {leaveRequest.status.name === "New" ? 'Submit' : 'Submitted'}</Button>
+                                    <CancelButton leaveRequest={leaveRequest} handleCancelLeaveRequest={handleCancelLeaveRequest} />
+                                    <ViewButton leaveRequest={leaveRequest} handleViewLeaveRequest={handleViewLeaveRequest} />
+                                    <EditButton leaveRequest={leaveRequest} handleEditLeaveRequest={handleEditLeaveRequest} />
+                                    <SubmitButton leaveRequest={leaveRequest} handleSubmitLeaveRequest={handleSubmitLeaveRequest} />
                                 </TableCell>
                             </TableRow>
                         ))}
