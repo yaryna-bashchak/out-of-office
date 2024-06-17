@@ -2,7 +2,6 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import App from "../layout/App";
 import NotFound from "../errors/NotFound";
 import HomePage from "../../features/home/HomePage";
-import Projects from "../../features/projects/Projects";
 import EmployeeList from "../../features/employees/EmployeeList";
 import EmployeeEditor from "../../features/employees/EmployeeEditor";
 import EmployeeDetails from "../../features/employees/EmployeeDetails";
@@ -12,6 +11,9 @@ import LeaveRequestEditor from "../../features/leaveRequests/LeaveRequestEditor"
 import ApprovalRequestList from "../../features/approvalRequests/ApprovalRequestList";
 import ApprovalRequestDetails from "../../features/approvalRequests/ApprovalRequestDetails";
 import LeaveRejectionComment from "../../features/approvalRequests/LeaveRejectionComment";
+import ProjectList from "../../features/projects/ProjectList";
+import ProjectEditor from "../../features/projects/ProjectEditor";
+import ProjectDetails from "../../features/projects/ProjectDetails";
 
 export const router = createBrowserRouter([
     {
@@ -30,7 +32,10 @@ export const router = createBrowserRouter([
             { path: 'approval-requests', element: <ApprovalRequestList /> },
             { path: 'approval-requests/:id', element: <ApprovalRequestDetails /> },
             { path: 'approval-requests/:id/reject', element: <LeaveRejectionComment /> },
-            { path: 'projects', element: <Projects /> },
+            { path: 'projects', element: <ProjectList /> },
+            { path: 'projects/:id', element: <ProjectDetails /> },
+            { path: 'projects/:id/edit', element: <ProjectEditor /> },
+            { path: 'projects/new', element: <ProjectEditor /> },
             { path: 'not-found', element: <NotFound /> },
             { path: '*', element: <Navigate replace to='not-found' /> },
         ]
