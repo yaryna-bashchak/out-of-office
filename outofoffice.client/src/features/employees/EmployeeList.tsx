@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Employee } from '../../app/models/employee';
 import { SortConfig, useSortableData } from '../../app/hooks/useSortableData';
 import SortableTableCell from '../../app/components/SortableTableCell';
+import { EditButton, ViewButton } from '../../app/components/ListButtons';
 
 const BoldTableCell = styled(TableCell)({
     fontWeight: 'bold',
@@ -86,8 +87,8 @@ const EmployeeList = () => {
                                 <TableCell>{employee.peoplePartner?.fullName}</TableCell>
                                 <TableCell align='center'>{employee.outOfOfficeBalance}</TableCell>
                                 <TableCell>
-                                    <Button onClick={() => handleEditEmployee(employee.id)}>Edit</Button>
-                                    <Button onClick={() => handleViewEmployee(employee.id)}>View</Button>
+                                    <EditButton id={employee.id} handleEdit={handleEditEmployee} />
+                                    <ViewButton id={employee.id} handleView={handleViewEmployee} />
                                 </TableCell>
                             </TableRow>
                         ))}

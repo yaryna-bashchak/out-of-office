@@ -10,7 +10,6 @@ import LeaveRequestContext from '../../app/context/LeaveRequestContext';
 import { Employee } from '../../app/models/employee';
 import { AbsenceReason, RequestType, LeaveRequestStatus, LeaveRequest, LeaveRequestPayload } from '../../app/models/leaveRequest';
 
-
 interface TransformedEmployee {
     id: number;
     name: string;

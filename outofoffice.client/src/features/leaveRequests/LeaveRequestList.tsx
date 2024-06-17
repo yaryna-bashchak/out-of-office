@@ -4,7 +4,7 @@ import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableH
 import { styled, useTheme } from '@mui/material/styles';
 import LeaveRequestContext from '../../app/context/LeaveRequestContext';
 import { LeaveRequest } from '../../app/models/leaveRequest';
-import { CancelButton, EditButton, SubmitButton, ViewButton } from './ListButtons';
+import { CancelButton, EditButton, SubmitButton, ViewButton } from '../../app/components/ListButtons';
 import { SortConfig, useSortableData } from '../../app/hooks/useSortableData';
 import SortableTableCell from '../../app/components/SortableTableCell';
 import { getStatusStyles } from '../../app/components/getStatusStyles';
@@ -105,10 +105,10 @@ const LeaveRequestList = () => {
                                 <TableCell align='center'>{leaveRequest.hours}</TableCell>
                                 <TableCell><Typography align='center' sx={getStatusStyles(leaveRequest.status.name)}>{leaveRequest.status.name}</Typography></TableCell>
                                 <TableCell>
-                                    <CancelButton leaveRequest={leaveRequest} handleCancelLeaveRequest={handleCancelLeaveRequest} />
-                                    <ViewButton leaveRequest={leaveRequest} handleViewLeaveRequest={handleViewLeaveRequest} />
-                                    <EditButton leaveRequest={leaveRequest} handleEditLeaveRequest={handleEditLeaveRequest} />
-                                    <SubmitButton leaveRequest={leaveRequest} handleSubmitLeaveRequest={handleSubmitLeaveRequest} />
+                                    <CancelButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleCancel={handleCancelLeaveRequest} />
+                                    <ViewButton id={leaveRequest.id} handleView={handleViewLeaveRequest} />
+                                    <EditButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleEdit={handleEditLeaveRequest} />
+                                    <SubmitButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleSubmit={handleSubmitLeaveRequest} />
                                 </TableCell>
                             </TableRow>
                         ))}
