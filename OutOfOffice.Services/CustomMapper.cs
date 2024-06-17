@@ -90,7 +90,7 @@ public static class CustomMapper
         };
     }
 
-    public static LeaveRequest MapToLeaveRequest(int id, UpdateLeaveRequestDto leaveRequestDto)
+    public static LeaveRequest MapToLeaveRequest(int id, UpdateLeaveRequestDto leaveRequestDto, int statusId)
     {
         return new LeaveRequest
         {
@@ -102,6 +102,7 @@ public static class CustomMapper
             EmployeeId = leaveRequestDto.EmployeeId,
             AbsenceReasonId = leaveRequestDto.AbsenceReasonId,
             RequestTypeId = leaveRequestDto.RequestTypeId,
+            StatusId = statusId
         };
     }
 

@@ -69,7 +69,7 @@ public class LeaveRequestService : ILeaveRequestService
         var employee = await _employeeRepository.GetEmployeeByIdAsync(leaveRequestDto.EmployeeId);
         ValidateOutOfOfficeBalance(employee.OutOfOfficeBalance, workingDays);
 
-        var mappedLeaveRequest = CustomMapper.MapToLeaveRequest(id, leaveRequestDto);
+        var mappedLeaveRequest = CustomMapper.MapToLeaveRequest(id, leaveRequestDto, prevLeaveRequest.StatusId);
         var updatedLeaveRequest = await _leaveRequestRepository.UpdateLeaveRequestAsync(mappedLeaveRequest);
 
         return CustomMapper.MapToLeaveRequestDto(updatedLeaveRequest);
