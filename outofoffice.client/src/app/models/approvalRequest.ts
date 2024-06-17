@@ -3,7 +3,7 @@ import { LeaveRequest } from './leaveRequest'
 
 export interface ApprovalRequest {
   id: number
-  comment: string
+  comment: string | null
   approver: Employee
   leaveRequest: LeaveRequest
   status: ApprovalRequestStatus
@@ -12,4 +12,9 @@ export interface ApprovalRequest {
 export interface ApprovalRequestStatus {
   id: number
   name: string
+}
+
+export interface ApprovalRequestPayload {
+  comment: string | null
+  statusId: number
 }

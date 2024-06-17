@@ -26,3 +26,13 @@ export interface LeaveRequestStatus {
   id: number
   name: string
 }
+
+export interface LeaveRequestPayload {
+  startDate: string
+  endDate: string
+  hours: number | null
+  comment: string
+  absenceReasonId: number
+  employeeId: number
+  requestTypeId: number
+}
