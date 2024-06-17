@@ -25,10 +25,10 @@ public class ProjectService : IProjectService
         foreach (var project in projects)
         {
             var projectDto = CustomMapper.MapToProjectDto(project);
-            var projectMembers = await _employeeRepository.GetEmployeesByProjectIdAsync(project.Id);
+            var projectMembers = await _employeeRepository.GetProjectEmployeesByProjectIdAsync(project.Id);
             foreach (var member in projectMembers)
             {
-                projectDto.Members.Add(CustomMapper.MapToEmployeeDto(member));
+                projectDto.ProjectEmployees.Add(CustomMapper.MapToProjectEmployeeDto(member));
             }
 
             projectDtos.Add(projectDto);
@@ -42,10 +42,10 @@ public class ProjectService : IProjectService
         var project = await _projectRepository.GetProjectByIdAsync(id);
         var projectDto = CustomMapper.MapToProjectDto(project);
 
-        var projectMembers = await _employeeRepository.GetEmployeesByProjectIdAsync(id);
+        var projectMembers = await _employeeRepository.GetProjectEmployeesByProjectIdAsync(id);
         foreach (var member in projectMembers)
         {
-            projectDto.Members.Add(CustomMapper.MapToEmployeeDto(member));
+            projectDto.ProjectEmployees.Add(CustomMapper.MapToProjectEmployeeDto(member));
         }
 
         return projectDto;

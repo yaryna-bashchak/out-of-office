@@ -184,7 +184,7 @@ public static class CustomMapper
             ProjectManager = MapToEmployeeDto(project.ProjectManager),
             ProjectType = project.ProjectType,
             Status = project.Status,
-            Members = new List<GetEmployeeDto>()
+            ProjectEmployees = new List<ProjectEmployeeDto>()
         };
     }
 
@@ -218,6 +218,17 @@ public static class CustomMapper
     public static ProjectEmployee MapToProjectEmployee(ProjectEmployeeDto projectEmployee)
     {
         return new ProjectEmployee
+        {
+            StartDate = projectEmployee.StartDate,
+            EndDate = projectEmployee.EndDate,
+            ProjectId = projectEmployee.ProjectId,
+            EmployeeId = projectEmployee.EmployeeId,
+        };
+    }
+
+    public static ProjectEmployeeDto MapToProjectEmployeeDto(ProjectEmployee projectEmployee)
+    {
+        return new ProjectEmployeeDto
         {
             StartDate = projectEmployee.StartDate,
             EndDate = projectEmployee.EndDate,
