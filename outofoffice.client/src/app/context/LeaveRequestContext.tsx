@@ -57,12 +57,12 @@ export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) =>
 
   const editLeaveRequestInfo = async (id: number, leaveRequest: LeaveRequestPayload) => {
     const updatedLeaveRequest = await agent.LeaveRequest.updateInfo(id, leaveRequest);
-    setLeaveRequests(leaveRequests.map(emp => (emp.id === id ? updatedLeaveRequest : emp)));
+    setLeaveRequests(leaveRequests.map(req => (req.id === id ? updatedLeaveRequest : req)));
   };
 
   const editLeaveRequestStatus = async (id: number, statusId: number) => {
     const updatedLeaveRequest = await agent.LeaveRequest.updateStatus(id, statusId);
-    setLeaveRequests(leaveRequests.map(emp => (emp.id === id ? updatedLeaveRequest : emp)));
+    setLeaveRequests(leaveRequests.map(req => (req.id === id ? updatedLeaveRequest : req)));
   };
 
   return (
