@@ -8,7 +8,7 @@ export interface Project {
   projectManager: Employee
   projectType: ProjectType
   status: ProjectStatus
-  members: Employee[]
+  projectEmployees: ProjectEmployee[]
 }
 
 export interface ProjectType {
@@ -30,7 +30,7 @@ export interface ProjectPayload {
   statusId: number
 }
 
-export interface ProjectEmployeePayload {
+export interface ProjectEmployee {
   startDate: string
   endDate: string | null
   employeeId: number

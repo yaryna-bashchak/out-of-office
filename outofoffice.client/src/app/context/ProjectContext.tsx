@@ -1,7 +1,6 @@
-import { createContext, ReactNode, useState, useEffect, useContext } from "react";
+import { createContext, ReactNode, useState, useEffect } from "react";
 import agent from "../api/agent";
-import { Project, ProjectStatus, ProjectType, ProjectPayload, ProjectEmployeePayload } from "../models/project";
-import EmployeeContext from "./EmployeeContext";
+import { Project, ProjectStatus, ProjectType, ProjectPayload, ProjectEmployee } from "../models/project";
 
 interface ProjectContextType {
     projects: Project[];
@@ -9,8 +8,8 @@ interface ProjectContextType {
     types: ProjectType[];
     addProject: (project: ProjectPayload) => Promise<void>;
     editProject: (id: number, project: ProjectPayload) => Promise<void>;
-    addProjectEmployee: (employee: ProjectEmployeePayload) => Promise<void>;
-    editProjectEmployee: (employee: ProjectEmployeePayload) => Promise<void>;
+    addProjectEmployee: (employee: ProjectEmployee) => Promise<void>;
+    editProjectEmployee: (employee: ProjectEmployee) => Promise<void>;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -23,14 +22,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [statuses, setStatuses] = useState<ProjectStatus[]>([]);
     const [types, setTypes] = useState<ProjectType[]>([]);
-    const context = useContext(EmployeeContext);
 
-    if (!context) {
-        throw new Error('ProjectProvider must be used within an EmployeeProvider');
-    }
-
-    const { employees } = context;
-    
     useEffect(() => {
         const loadProjects = async () => {
             const projects = await agent.Project.getAll();
@@ -61,26 +53,22 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
         setProjects(projects.map(proj => (proj.id === id ? updatedProject : proj)));
     };
 
-    const addProjectEmployee = async (employee: ProjectEmployeePayload) => {
+    const addProjectEmployee = async (employee: ProjectEmployee) => {
         await agent.Project.addEmployee(employee);
-        const newEmployee = employees.find(emp => emp.id === employee.employeeId);
-        if (newEmployee) {
-            setProjects(projects.map(proj => 
-                proj.id === employee.projectId ? { ...proj, members: [...proj.members, newEmployee] } : proj
-            ));
-        }
+        setProjects(projects.map(proj =>
+            proj.id === employee.projectId ? { ...proj, projectEmployees: [...proj.projectEmployees, employee] } : proj
+        ));
     };
 
-    const editProjectEmployee = async (employee: ProjectEmployeePayload) => {
+    const editProjectEmployee = async (employee: ProjectEmployee) => {
         await agent.Project.updateEmployee(employee);
-        const updatedEmployee = employees.find(emp => emp.id === employee.employeeId);
-        if (updatedEmployee) {
-            setProjects(projects.map(proj => 
-                proj.id === employee.projectId ? { ...proj, members: proj.members.map(mem => 
-                    mem.id === employee.employeeId ? updatedEmployee : mem
-                )} : proj
-            ));
-        }
+        setProjects(projects.map(proj =>
+            proj.id === employee.projectId ? {
+                ...proj, projectEmployees: proj.projectEmployees.map(mem =>
+                    mem.employeeId === employee.employeeId ? employee : mem
+                )
+            } : proj
+        ));
     };
 
     return (
