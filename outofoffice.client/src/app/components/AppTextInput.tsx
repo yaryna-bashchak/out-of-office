@@ -1,19 +1,18 @@
 import { TextField } from "@mui/material";
-import { useController, UseControllerProps } from "react-hook-form";
-import { Employee } from "../models/employee";
+import { FieldValues, useController, UseControllerProps } from "react-hook-form";
 
-interface Props extends UseControllerProps<Employee> {
+interface Props<T extends FieldValues> extends UseControllerProps<T> {
     label: string;
     multiline?: boolean;
     rows?: number;
     type?: string;
 }
 
-export default function AppTextInput(props: Props) {
-    const {fieldState, field} = useController({...props, defaultValue: ''})
+export default function AppTextInput<T extends FieldValues>(props: Props<T>) {
+    const { fieldState, field } = useController({ ...props })
 
     return (
-        <TextField 
+        <TextField
             {...props}
             {...field}
             multiline={props.multiline}

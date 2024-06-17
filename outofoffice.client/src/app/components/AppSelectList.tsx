@@ -1,18 +1,16 @@
 import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
-import { UseControllerProps, useController } from 'react-hook-form';
-import { Employee } from '../models/employee';
-// import { useEffect } from 'react';
+import { FieldValues, UseControllerProps, useController } from 'react-hook-form';
 
 interface Option {
     id: number;
     name: string;
 }
 
-interface Props extends UseControllerProps<Employee> {
+interface Props<T extends FieldValues> extends UseControllerProps<T> {
     label: string;
     options: Option[];
 }
-export default function AppSelectList(props: Props) {
+export default function AppSelectList<T extends FieldValues>(props: Props<T>) {
     const { fieldState, field } = useController({ ...props });
     const { label, options } = props;
 
