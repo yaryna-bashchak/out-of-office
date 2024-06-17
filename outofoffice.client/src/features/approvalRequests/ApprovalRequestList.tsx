@@ -1,4 +1,3 @@
-import styled from "@emotion/styled";
 import { TableCell, Box, Typography, TableContainer, Paper, Table, TableHead, TableRow, TableBody, useTheme } from "@mui/material";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,10 +7,7 @@ import ApprovalRequestContext from "../../app/context/ApprovalRequestContext";
 import { SortConfig, useSortableData } from "../../app/hooks/useSortableData";
 import { ApprovalRequest, ApprovalRequestPayload } from "../../app/models/approvalRequest";
 import { ApproveButton, RejectButton, ViewButton } from "../../app/components/ListButtons";
-
-const BoldTableCell = styled(TableCell)({
-    fontWeight: 'bold',
-});
+import BoldTableCell from "../../app/components/BoldTableCell";
 
 const ApprovalRequestList = () => {
     const theme = useTheme();

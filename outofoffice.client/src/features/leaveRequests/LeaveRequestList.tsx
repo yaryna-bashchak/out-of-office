@@ -1,17 +1,14 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { styled, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import LeaveRequestContext from '../../app/context/LeaveRequestContext';
 import { LeaveRequest } from '../../app/models/leaveRequest';
 import { CancelButton, EditButton, SubmitButton, ViewButton } from '../../app/components/ListButtons';
 import { SortConfig, useSortableData } from '../../app/hooks/useSortableData';
 import SortableTableCell from '../../app/components/SortableTableCell';
 import { getStatusStyles } from '../../app/components/getStatusStyles';
-
-const BoldTableCell = styled(TableCell)({
-    fontWeight: 'bold',
-});
+import BoldTableCell from "../../app/components/BoldTableCell";
 
 const LeaveRequestList = () => {
     const theme = useTheme();

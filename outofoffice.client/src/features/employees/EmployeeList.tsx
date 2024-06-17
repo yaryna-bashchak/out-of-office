@@ -1,15 +1,13 @@
 import { useContext } from 'react';
 import EmployeeContext from '../../app/context/EmployeeContext';
-import { Box, Typography, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, styled, useTheme } from '@mui/material';
+import { Box, Typography, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { Employee } from '../../app/models/employee';
 import { SortConfig, useSortableData } from '../../app/hooks/useSortableData';
 import SortableTableCell from '../../app/components/SortableTableCell';
 import { EditButton, ViewButton } from '../../app/components/ListButtons';
+import BoldTableCell from "../../app/components/BoldTableCell";
 
-const BoldTableCell = styled(TableCell)({
-    fontWeight: 'bold',
-});
 
 const EmployeeList = () => {
     const theme = useTheme();
