@@ -17,13 +17,33 @@ public class EmployeeService : IEmployeeService
     public async Task<List<GetEmployeeDto>> GetAllEmployeesAsync()
     {
         var employees = await _employeeRepository.GetAllEmployeesAsync();
-        return employees.Select(e => CustomMapper.MapToEmployeeDto(e)).ToList();
+        var employeeDtos = new List<GetEmployeeDto>();
+
+        foreach (var employee in employees)
+        {
+            var employeeDto = CustomMapper.MapToEmployeeDto(employee);
+            var employeeProjects = await _employeeRepository.GetProjectEmployeesByEmployeeIdAsync(employee.Id);
+            foreach (var employeeProject in employeeProjects)
+            {
+                employeeDto.ProjectEmployees.Add(CustomMapper.MapToProjectEmployeeDto(employeeProject));
+            }
+
+            employeeDtos.Add(employeeDto);
+        }
+        return employeeDtos;
     }
 
     public async Task<GetEmployeeDto> GetEmployeeByIdAsync(int id)
     {
         var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
-        return CustomMapper.MapToEmployeeDto(employee);
+        var employeeDto = CustomMapper.MapToEmployeeDto(employee);
+
+        var employeeProjects = await _employeeRepository.GetProjectEmployeesByEmployeeIdAsync(employee.Id);
+        foreach (var employeeProject in employeeProjects)
+        {
+            employeeDto.ProjectEmployees.Add(CustomMapper.MapToProjectEmployeeDto(employeeProject));
+        }
+        return employeeDto;
     }
 
     public async Task<GetEmployeeDto> AddEmployeeAsync(AddEmployeeDto newEmployeeDto)

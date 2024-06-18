@@ -19,6 +19,7 @@ public static class CustomMapper
             Position = employee.Position,
             Status = employee.Status,
             Subdivision = employee.Subdivision,
+            ProjectEmployees = new List<ProjectEmployeeDto>(),
         };
     }
 

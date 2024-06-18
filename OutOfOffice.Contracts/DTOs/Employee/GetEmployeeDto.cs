@@ -1,4 +1,5 @@
-﻿using OutOfOffice.Contracts.Models;
+﻿using OutOfOffice.Contracts.DTOs.Project;
+using OutOfOffice.Contracts.Models;
 
 namespace OutOfOffice.Contracts.DTOs;
 
@@ -12,4 +13,5 @@ public class GetEmployeeDto
     public Position Position { get; set; }
     public EmployeeStatus Status { get; set; }
     public Subdivision Subdivision { get; set; }
+    public List<ProjectEmployeeDto> ProjectEmployees { get; set; }
 }

@@ -170,6 +170,21 @@ public class EmployeeRepository : IEmployeeRepository
         }
     }
 
+    public async Task<List<ProjectEmployee>> GetProjectEmployeesByEmployeeIdAsync(int employeeId)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                SELECT *
+                FROM ProjectEmployees pe
+                WHERE pe.EmployeeId = @EmployeeId";
+
+            var employees = await connection.QueryAsync<ProjectEmployee>(query, new { EmployeeId = employeeId });
+            return employees.ToList();
+        }
+    }
+
     public async Task<List<Subdivision>> GetAllSubdivisionsAsync()
     {
         using (var connection = new SqlConnection(_connectionString))
