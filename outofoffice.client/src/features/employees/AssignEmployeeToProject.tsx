@@ -79,7 +79,7 @@ const AssignEmployeeToProject = () => {
     const startDate = watch('startDate');
 
     return (
-        <Box sx={{ p: 4 }}>
+        <Box sx={{ p: 4, width: '600px' }}>
             <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: theme.palette.primary.main }}>
                 Assign Employee {employee?.fullName} To Project
             </Typography>

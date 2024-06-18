@@ -41,7 +41,7 @@ const LeaveRejectionComment = () => {
         navigate('/approval-requests');
     }
 
-    return (<Box sx={{ p: 4 }}>
+    return (<Box sx={{ p: 4, width: '600px' }}>
         <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: theme.palette.primary.main }}>
             Leave Rejection Comment (optional)
         </Typography>

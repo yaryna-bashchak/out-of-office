@@ -70,7 +70,7 @@ const LeaveRequestList = () => {
     }
 
     return (
-        <>
+        <Box>
             <Box display='flex' justifyContent='space-between'>
                 <Typography sx={{ p: 2, fontWeight: 'bold', color: theme.palette.primary.main }} variant='h4'>Leave Requests</Typography>
                 <Button onClick={() => handleAddLeaveRequest()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>
@@ -112,7 +112,7 @@ const LeaveRequestList = () => {
                     </TableBody>
                 </Table>
             </TableContainer >
-        </>
+        </Box>
     );
 };
 

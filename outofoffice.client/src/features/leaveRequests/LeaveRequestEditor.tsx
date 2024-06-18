@@ -102,7 +102,7 @@ const LeaveRequestEditor = () => {
     const startDate = watch('startDate');
 
     return (
-        <Box sx={{ p: 4 }}>
+        <Box sx={{ p: 4, width: '600px' }}>
             <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: theme.palette.primary.main }}>
                 {id ? 'Edit Leave Request' : 'Add Leave Request'}
             </Typography>
