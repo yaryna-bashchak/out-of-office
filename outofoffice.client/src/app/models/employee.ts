@@ -1,3 +1,5 @@
+import { ProjectEmployee } from "./project"
+
 export interface Employee {
   id: number
   fullName: string
@@ -7,6 +9,7 @@ export interface Employee {
   position: Position
   status: EmployeeStatus
   subdivision: Subdivision
+  projectEmployees: ProjectEmployee[]
 }
 
 export interface PeoplePartner {

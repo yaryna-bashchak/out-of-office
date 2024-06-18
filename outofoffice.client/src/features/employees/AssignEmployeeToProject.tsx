@@ -63,12 +63,13 @@ const AssignEmployeeToProject = () => {
     const onSubmit = async (data: ProjectEmployee) => {
         const transformedData: ProjectEmployee = {
             ...data,
+            employeeId: id ? parseInt(id) : 0,
             startDate: formatDateForApi(data.startDate),
             endDate: data.endDate && formatDateForApi(data.endDate),
         };
 
         await addProjectEmployee(transformedData);
-        navigate('/employees');
+        navigate(`/employees/${id}`);
     };
 
     const handleCancel = () => {

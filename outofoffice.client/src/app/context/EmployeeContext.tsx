@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode, SetStateAction, Dispatch } from 'react';
 import { Employee, EmployeePayload, EmployeeStatus, Position, Subdivision } from '../models/employee';
 import agent from '../api/agent';
 
@@ -11,6 +11,7 @@ interface EmployeeContextType {
   editEmployee: (id: number, employee: EmployeePayload) => Promise<void>;
   hrManagers: Employee[];
   projectManagers: Employee[];
+  setEmployees: Dispatch<SetStateAction<Employee[]>>
 }
 
 const EmployeeContext = createContext<EmployeeContextType | undefined>(undefined);
@@ -95,7 +96,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   };
 
   return (
-    <EmployeeContext.Provider value={{ employees, positions, statuses, subdivisions, addEmployee, editEmployee, hrManagers, projectManagers }}>
+    <EmployeeContext.Provider value={{ employees, positions, statuses, subdivisions, addEmployee, editEmployee, hrManagers, projectManagers, setEmployees }}>
       {children}
     </EmployeeContext.Provider>
   );

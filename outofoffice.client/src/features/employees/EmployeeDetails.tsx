@@ -1,20 +1,24 @@
 import { useContext } from 'react';
 import EmployeeContext from '../../app/context/EmployeeContext';
-import { Box, Typography, Button, useTheme } from '@mui/material';
+import { Box, Typography, Button, useTheme, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import DetailItem from '../../app/components/DetailItem';
+import BoldTableCell from '../../app/components/BoldTableCell';
+import ProjectContext from '../../app/context/ProjectContext';
 
 const EmployeeDetails = () => {
     const theme = useTheme();
-    const context = useContext(EmployeeContext);
+    const projectContext = useContext(ProjectContext);
+    const employeeContext = useContext(EmployeeContext);
     const { id } = useParams<{ id: string | undefined }>();
     const navigate = useNavigate();
 
-    if (!context) {
-        throw new Error('EmployeeDetails must be used within an EmployeeProvider');
+    if (!projectContext || !employeeContext) {
+        throw new Error('ProjectDetails must be used within a ProjectProvider and EmployeeProvider');
     }
 
-    const { employees } = context;
+    const { projects } = projectContext;
+    const { employees } = employeeContext;
     const employee = id ? employees.find(emp => emp.id === parseInt(id)) : null;
 
     const handleGoBack = () => {
@@ -31,6 +35,35 @@ const EmployeeDetails = () => {
             <DetailItem label='People Partner' value={employee?.peoplePartner?.fullName} />
             <DetailItem label='Out-Of-Office Balance' value={employee?.outOfOfficeBalance} />
             <DetailItem label='Status' value={employee?.status.name} />
+            {employee && employee.projectEmployees.length > 0 && <TableContainer component={Paper} sx={{ mb: 2 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Project ID</TableCell>
+                            <TableCell>Project Manager</TableCell>
+                            <TableCell>Project Type</TableCell>
+                            <TableCell>Project Comment</TableCell>
+                            <TableCell>Start Date</TableCell>
+                            <TableCell>End Date</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {employee?.projectEmployees.map((projectEmployee) => {
+                            const project = projects.find(proj => proj.id === projectEmployee.projectId);
+                            return (
+                                <TableRow key={projectEmployee.projectId}>
+                                    <TableCell>{projectEmployee.projectId}</TableCell>
+                                    <BoldTableCell>{project && project.projectManager.fullName}</BoldTableCell>
+                                    <BoldTableCell>{project && project.projectType.name}</BoldTableCell>
+                                    <BoldTableCell>{project && project.comment}</BoldTableCell>
+                                    <TableCell>{new Date(projectEmployee.startDate).toLocaleDateString()}</TableCell>
+                                    <TableCell>{projectEmployee.endDate && new Date(projectEmployee.endDate).toLocaleDateString()}</TableCell>
+                                </TableRow>
+                            )
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>}
             <Button variant="outlined" onClick={handleGoBack} >
                 Back to Employees List
             </Button>

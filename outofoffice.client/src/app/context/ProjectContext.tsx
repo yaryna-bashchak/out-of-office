@@ -1,6 +1,7 @@
-import { createContext, ReactNode, useState, useEffect } from "react";
+import { createContext, ReactNode, useState, useEffect, useContext } from "react";
 import agent from "../api/agent";
 import { Project, ProjectStatus, ProjectType, ProjectPayload, ProjectEmployee } from "../models/project";
+import EmployeeContext from "./EmployeeContext";
 
 interface ProjectContextType {
     projects: Project[];
@@ -22,6 +23,13 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [statuses, setStatuses] = useState<ProjectStatus[]>([]);
     const [types, setTypes] = useState<ProjectType[]>([]);
+
+    const employeeContext = useContext(EmployeeContext);
+
+    if (!employeeContext) {
+        throw new Error(' must be used within an EmployeeProvider');
+    }
+    const { employees, setEmployees } = employeeContext;
 
     useEffect(() => {
         const loadProjects = async () => {
@@ -58,6 +66,10 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
         setProjects(projects.map(proj =>
             proj.id === employee.projectId ? { ...proj, projectEmployees: [...proj.projectEmployees, employee] } : proj
         ));
+
+        setEmployees(employees.map(emp =>
+            emp.id === employee.employeeId ? { ...emp, projectEmployees: [...emp.projectEmployees, employee] } : emp
+        ));
     };
 
     const editProjectEmployee = async (employee: ProjectEmployee) => {
@@ -68,6 +80,14 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
                     mem.employeeId === employee.employeeId ? employee : mem
                 )
             } : proj
+        ));
+
+        setEmployees(employees.map(emp =>
+            emp.id === employee.employeeId ? {
+                ...emp, projectEmployees: emp.projectEmployees.map(mem =>
+                    mem.projectId === employee.projectId ? employee : mem
+                )
+            } : emp
         ));
     };
 
