@@ -1,11 +1,13 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode, Dispatch, SetStateAction, useContext } from 'react';
 import agent from '../api/agent';
 import { ApprovalRequest, ApprovalRequestPayload, ApprovalRequestStatus } from '../models/approvalRequest';
+import LeaveRequestContext from './LeaveRequestContext';
 
 interface ApprovalRequestContextType {
     approvalRequests: ApprovalRequest[];
     statuses: ApprovalRequestStatus[];
     editApprovalRequest: (id: number, approvalRequest: ApprovalRequestPayload) => Promise<void>;
+    setApprovalRequests: Dispatch<SetStateAction<ApprovalRequest[]>>;
 }
 
 const ApprovalRequestContext = createContext<ApprovalRequestContextType | undefined>(undefined);
@@ -17,6 +19,8 @@ interface ApprovalRequestProviderProps {
 export const ApprovalRequestProvider = ({ children }: ApprovalRequestProviderProps) => {
     const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>([]);
     const [statuses, setStatuses] = useState<ApprovalRequestStatus[]>([]);
+
+    const leaveRequestContext = useContext(LeaveRequestContext);
 
     useEffect(() => {
         const loadApprovalRequests = async () => {
@@ -35,10 +39,15 @@ export const ApprovalRequestProvider = ({ children }: ApprovalRequestProviderPro
     const editApprovalRequest = async (id: number, approvalRequest: ApprovalRequestPayload) => {
         const updatedApprovalRequest = await agent.ApprovalRequest.update(id, approvalRequest);
         setApprovalRequests(approvalRequests.map(req => (req.id === id ? updatedApprovalRequest : req)));
+
+        if (leaveRequestContext) {
+            const newLeaveRequests = await agent.LeaveRequest.getAll();
+            leaveRequestContext.setLeaveRequests(newLeaveRequests);
+        }
     };
 
     return (
-        <ApprovalRequestContext.Provider value={{ approvalRequests, statuses, editApprovalRequest }}>
+        <ApprovalRequestContext.Provider value={{ approvalRequests, statuses, editApprovalRequest, setApprovalRequests }}>
             {children}
         </ApprovalRequestContext.Provider>
     );

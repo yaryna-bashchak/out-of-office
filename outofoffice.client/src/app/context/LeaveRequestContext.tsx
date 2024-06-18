@@ -1,6 +1,7 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode, useContext, Dispatch, SetStateAction } from 'react';
 import agent from '../api/agent';
 import { AbsenceReason, LeaveRequest, LeaveRequestPayload, LeaveRequestStatus, RequestType } from '../models/leaveRequest';
+import ApprovalRequestContext from './ApprovalRequestContext';
 
 interface LeaveRequestContextType {
   leaveRequests: LeaveRequest[];
@@ -10,6 +11,7 @@ interface LeaveRequestContextType {
   addLeaveRequest: (leaveRequest: LeaveRequestPayload) => Promise<void>;
   editLeaveRequestInfo: (id: number, leaveRequest: LeaveRequestPayload) => Promise<void>;
   editLeaveRequestStatus: (id: number, statusId: number,) => Promise<void>;
+  setLeaveRequests: Dispatch<SetStateAction<LeaveRequest[]>>;
 }
 
 const LeaveRequestContext = createContext<LeaveRequestContextType | undefined>(undefined);
@@ -24,6 +26,8 @@ export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) =>
   const [types, setTypes] = useState<RequestType[]>([]);
   const [absenceReasons, setAbsenceReasons] = useState<AbsenceReason[]>([]);
 
+  const approvalRequestContext = useContext(ApprovalRequestContext);
+  
   useEffect(() => {
     const loadLeaveRequests = async () => {
       const leaveRequests = await agent.LeaveRequest.getAll();
@@ -63,10 +67,15 @@ export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) =>
   const editLeaveRequestStatus = async (id: number, statusId: number) => {
     const updatedLeaveRequest = await agent.LeaveRequest.updateStatus(id, statusId);
     setLeaveRequests(leaveRequests.map(req => (req.id === id ? updatedLeaveRequest : req)));
+
+    if (approvalRequestContext) {
+      const newApprovalRequests = await agent.ApprovalRequest.getAll();
+      approvalRequestContext.setApprovalRequests(newApprovalRequests);
+    }
   };
 
   return (
-    <LeaveRequestContext.Provider value={{ leaveRequests, types, statuses, absenceReasons, addLeaveRequest, editLeaveRequestInfo, editLeaveRequestStatus }}>
+    <LeaveRequestContext.Provider value={{ leaveRequests, types, statuses, absenceReasons, addLeaveRequest, editLeaveRequestInfo, editLeaveRequestStatus, setLeaveRequests }}>
       {children}
     </LeaveRequestContext.Provider>
   );
