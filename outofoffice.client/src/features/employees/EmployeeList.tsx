@@ -7,18 +7,21 @@ import { SortConfig, useSortableData } from '../../app/hooks/useSortableData';
 import SortableTableCell from '../../app/components/SortableTableCell';
 import { EditButton, ViewButton } from '../../app/components/ListButtons';
 import BoldTableCell from "../../app/components/BoldTableCell";
+import UserRoleContext from '../../app/context/UserRoleContext';
 
 
 const EmployeeList = () => {
     const theme = useTheme();
     const context = useContext(EmployeeContext);
+    const userRoleContext = useContext(UserRoleContext);
     const navigate = useNavigate();
 
-    if (!context) {
-        throw new Error('EmployeeList must be used within an EmployeeProvider');
+    if (!context || !userRoleContext) {
+        throw new Error('EmployeeList must be used within an EmployeeProvider and UserRoleProvider');
     }
 
     const { employees } = context;
+    const { userRole } = userRoleContext;
 
     const getSortableValue = (employee: Employee, key: string) => {
         switch (key) {
@@ -62,7 +65,7 @@ const EmployeeList = () => {
         <>
             <Box display='flex' justifyContent='space-between'>
                 <Typography sx={{ p: 2, fontWeight: 'bold', color: theme.palette.primary.main }} variant='h4'>Employees</Typography>
-                <Button onClick={() => handleAddEmployee()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>
+                {userRole === 'HR Manager' && <Button onClick={() => handleAddEmployee()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>}
             </Box>
             <TableContainer component={Paper}>
                 <Table>
@@ -89,8 +92,8 @@ const EmployeeList = () => {
                                 <TableCell>{employee.peoplePartner?.fullName}</TableCell>
                                 <TableCell align='center'>{employee.outOfOfficeBalance}</TableCell>
                                 <TableCell>
-                                    <EditButton id={employee.id} handleEdit={handleEditEmployee} />
-                                    <Button size="small" onClick={() => handleAssignEmployeeToProject(employee.id)}>Assign to project</Button>
+                                    {userRole === 'HR Manager' && <EditButton id={employee.id} handleEdit={handleEditEmployee} />}
+                                    {userRole === 'Project Manager' && <Button size="small" onClick={() => handleAssignEmployeeToProject(employee.id)}>Assign to project</Button>}
                                     <ViewButton id={employee.id} handleView={handleViewEmployee} />
                                 </TableCell>
                             </TableRow>

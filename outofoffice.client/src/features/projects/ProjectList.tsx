@@ -7,17 +7,20 @@ import { EditButton, ViewButton } from '../../app/components/ListButtons';
 import ProjectContext from '../../app/context/ProjectContext';
 import { Project } from '../../app/models/project';
 import BoldTableCell from "../../app/components/BoldTableCell";
+import UserRoleContext from '../../app/context/UserRoleContext';
 
 const ProjectList = () => {
     const theme = useTheme();
     const context = useContext(ProjectContext);
+    const userRoleContext = useContext(UserRoleContext);
     const navigate = useNavigate();
 
-    if (!context) {
-        throw new Error('ProjectList must be used within an ProjectProvider');
+    if (!context || !userRoleContext) {
+        throw new Error('ProjectList must be used within an ProjectProvider and UserRoleProvider');
     }
 
     const { projects } = context;
+    const { userRole } = userRoleContext;
 
     const getSortableValue = (project: Project, key: string) => {
         switch (key) {
@@ -55,7 +58,7 @@ const ProjectList = () => {
         <>
             <Box display='flex' justifyContent='space-between'>
                 <Typography sx={{ p: 2, fontWeight: 'bold', color: theme.palette.primary.main }} variant='h4'>Projects</Typography>
-                <Button onClick={() => handleAddProject()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>
+                {userRole === 'Project Manager' && <Button onClick={() => handleAddProject()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>}
             </Box>
             <TableContainer component={Paper}>
                 <Table>
@@ -80,7 +83,7 @@ const ProjectList = () => {
                                 <TableCell>{project.projectType.name}</TableCell>
                                 <TableCell>{project.status.name}</TableCell>
                                 <TableCell>
-                                    <EditButton id={project.id} handleEdit={handleEditProject} />
+                                    {userRole === 'Project Manager' && <EditButton id={project.id} handleEdit={handleEditProject} />}
                                     <ViewButton id={project.id} handleView={handleViewProject} />
                                 </TableCell>
                             </TableRow>

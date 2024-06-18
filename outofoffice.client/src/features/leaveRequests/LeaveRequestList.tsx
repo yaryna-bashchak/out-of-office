@@ -9,17 +9,20 @@ import { SortConfig, useSortableData } from '../../app/hooks/useSortableData';
 import SortableTableCell from '../../app/components/SortableTableCell';
 import { getStatusStyles } from '../../app/components/getStatusStyles';
 import BoldTableCell from "../../app/components/BoldTableCell";
+import UserRoleContext from '../../app/context/UserRoleContext';
 
 const LeaveRequestList = () => {
     const theme = useTheme();
     const context = useContext(LeaveRequestContext);
+    const userRoleContext = useContext(UserRoleContext);
     const navigate = useNavigate();
 
-    if (!context) {
-        throw new Error('LeaveRequestList must be used within a LeaveRequestProvider');
+    if (!context || !userRoleContext) {
+        throw new Error('LeaveRequestList must be used within a LeaveRequestProvider and UserRoleProvider');
     }
 
     const { leaveRequests, editLeaveRequestStatus, statuses } = context;
+    const { userRole } = userRoleContext;
 
     const getSortableValue = (leaveRequest: LeaveRequest, key: string) => {
         switch (key) {
@@ -73,7 +76,7 @@ const LeaveRequestList = () => {
         <Box>
             <Box display='flex' justifyContent='space-between'>
                 <Typography sx={{ p: 2, fontWeight: 'bold', color: theme.palette.primary.main }} variant='h4'>Leave Requests</Typography>
-                <Button onClick={() => handleAddLeaveRequest()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>
+                {userRole === 'Employee' && <Button onClick={() => handleAddLeaveRequest()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>}
             </Box>
             <TableContainer component={Paper}>
                 <Table>
@@ -102,10 +105,12 @@ const LeaveRequestList = () => {
                                 <TableCell align='center'>{leaveRequest.hours}</TableCell>
                                 <TableCell><Typography align='center' sx={getStatusStyles(leaveRequest.status.name)}>{leaveRequest.status.name}</Typography></TableCell>
                                 <TableCell>
-                                    <CancelButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleCancel={handleCancelLeaveRequest} />
+                                    {userRole === 'Employee' && <CancelButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleCancel={handleCancelLeaveRequest} />}
                                     <ViewButton id={leaveRequest.id} handleView={handleViewLeaveRequest} />
-                                    <EditButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleEdit={handleEditLeaveRequest} />
-                                    <SubmitButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleSubmit={handleSubmitLeaveRequest} />
+                                    {userRole === 'Employee' && <>
+                                        <EditButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleEdit={handleEditLeaveRequest} />
+                                        <SubmitButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleSubmit={handleSubmitLeaveRequest} />
+                                    </>}
                                 </TableCell>
                             </TableRow>
                         ))}

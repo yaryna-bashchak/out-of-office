@@ -1,4 +1,4 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import './Layout.css';
 import { useContext } from 'react';
 import UserRoleContext, { UserRole, roles } from '../context/UserRoleContext';
@@ -16,6 +16,7 @@ const sidebarLinks: SidebarLink[] = [
 ];
 
 const Layout = () => {
+    const navigate = useNavigate();
     const userRoleContext = useContext(UserRoleContext);
 
     if (!userRoleContext) {
@@ -26,8 +27,9 @@ const Layout = () => {
 
     const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setUserRole(event.target.value as UserRole);
+        navigate('/');
     };
-    
+
     const filteredSidebarLinks = userRole === 'Employee'
         ? sidebarLinks.filter(link => link.link === '/leave-requests')
         : sidebarLinks;
