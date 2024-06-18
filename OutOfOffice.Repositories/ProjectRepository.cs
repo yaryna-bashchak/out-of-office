@@ -16,7 +16,7 @@ public class ProjectRepository : IProjectRepository
         _employeeRepository = new EmployeeRepository(_connectionString);
     }
 
-    public async Task<List<Project>> GetAllProjectsAsync()
+    public async Task<List<Project>> GetAllProjectsAsync(string searchTerm = null)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -27,6 +27,11 @@ public class ProjectRepository : IProjectRepository
                 LEFT JOIN ProjectTypes pt ON p.ProjectTypeID = pt.ID
                 LEFT JOIN ProjectStatuses ps ON p.StatusID = ps.ID";
 
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query += " WHERE p.Id LIKE @SearchTerm";
+            }
+
             var projects = await connection.QueryAsync<Project, ProjectType, ProjectStatus, Project>(
                 query,
                 (project, type, status) =>
@@ -35,6 +40,7 @@ public class ProjectRepository : IProjectRepository
                     project.Status = status;
                     return project;
                 },
+                new { SearchTerm = $"%{searchTerm}%" },
                 splitOn: "Id");
 
             foreach (var project in projects)

@@ -17,9 +17,9 @@ public class ApprovalRequestService : IApprovalRequestService
         _approvalRequestRepository = approvalRequestRepository;
 
     }
-    public async Task<List<GetApprovalRequestDto>> GetAllApprovalRequestsAsync()
+    public async Task<List<GetApprovalRequestDto>> GetAllApprovalRequestsAsync(string searchTerm = null)
     {
-        var approvalRequests = await _approvalRequestRepository.GetAllApprovalRequestsAsync();
+        var approvalRequests = await _approvalRequestRepository.GetAllApprovalRequestsAsync(searchTerm);
         return approvalRequests.Select(ar => CustomMapper.MapToApprovalRequestDto(ar)).ToList();
     }
 

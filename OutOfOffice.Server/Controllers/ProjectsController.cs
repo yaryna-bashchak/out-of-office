@@ -18,11 +18,11 @@ public class ProjectsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetAllProjectsAsync()
+    public async Task<ActionResult<IEnumerable<GetProjectDto>>> GetAllProjectsAsync([FromQuery] string searchTerm = null)
     {
         try
         {
-            var projects = await _projectService.GetAllProjectsAsync();
+            var projects = await _projectService.GetAllProjectsAsync(searchTerm);
             return Ok(projects);
         }
         catch (Exception ex)

@@ -4,7 +4,7 @@ namespace OutOfOffice.Interfaces.Repositories;
 
 public interface IProjectRepository
 {
-    Task<List<Project>> GetAllProjectsAsync();
+    Task<List<Project>> GetAllProjectsAsync(string searchTerm = null);
     Task<Project> GetProjectByIdAsync(int id);
     Task<Project> AddProjectAsync(Project project);
     Task<Project> UpdateProjectAsync(Project project);

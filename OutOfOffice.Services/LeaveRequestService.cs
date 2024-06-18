@@ -18,9 +18,9 @@ public class LeaveRequestService : ILeaveRequestService
         _employeeRepository = employeeRepository;
     }
 
-    public async Task<List<GetLeaveRequestDto>> GetAllLeaveRequestsAsync()
+    public async Task<List<GetLeaveRequestDto>> GetAllLeaveRequestsAsync(string searchTerm = null)
     {
-        var leaveRequests = await _leaveRequestRepository.GetAllLeaveRequestsAsync();
+        var leaveRequests = await _leaveRequestRepository.GetAllLeaveRequestsAsync(searchTerm);
         return leaveRequests.Select(lr => CustomMapper.MapToLeaveRequestDto(lr)).ToList();
     }
 

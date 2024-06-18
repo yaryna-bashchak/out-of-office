@@ -5,7 +5,7 @@ namespace OutOfOffice.Interfaces.Services;
 
 public interface ILeaveRequestService
 {
-    Task<List<GetLeaveRequestDto>> GetAllLeaveRequestsAsync();
+    Task<List<GetLeaveRequestDto>> GetAllLeaveRequestsAsync(string searchTerm = null);
     Task<GetLeaveRequestDto> GetLeaveRequestByIdAsync(int id);
     Task<GetLeaveRequestDto> AddLeaveRequestAsync(AddLeaveRequestDto leaveRequest);
     Task<GetLeaveRequestDto> UpdateLeaveRequestInfoAsync(int id, UpdateLeaveRequestDto leaveRequest);

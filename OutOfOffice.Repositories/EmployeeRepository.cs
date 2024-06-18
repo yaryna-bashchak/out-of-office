@@ -14,7 +14,7 @@ public class EmployeeRepository : IEmployeeRepository
         _connectionString = connectionString;
     }
 
-    public async Task<List<Employee>> GetAllEmployeesAsync()
+    public async Task<List<Employee>> GetAllEmployeesAsync(string searchTerm = null)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -31,6 +31,11 @@ public class EmployeeRepository : IEmployeeRepository
                 LEFT JOIN Subdivisions sub ON e.SubdivisionId = sub.Id
                 LEFT JOIN Employees pp ON e.PeoplePartnerId = pp.Id";
 
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query += " WHERE e.FullName LIKE @SearchTerm";
+            }
+
             var employees = await connection.QueryAsync<Employee, Position, EmployeeStatus, Subdivision, Employee, Employee>(
                 query,
                 (employee, position, status, subdivision, peoplePartner) =>
@@ -41,6 +46,7 @@ public class EmployeeRepository : IEmployeeRepository
                     employee.PeoplePartner = peoplePartner;
                     return employee;
                 },
+                new { SearchTerm = $"%{searchTerm}%" },
                 splitOn: "Id");
 
             return employees.ToList();

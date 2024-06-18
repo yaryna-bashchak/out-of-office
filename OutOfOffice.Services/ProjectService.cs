@@ -17,9 +17,9 @@ public class ProjectService : IProjectService
         _employeeRepository = employeeRepository;
     }
 
-    public async Task<List<GetProjectDto>> GetAllProjectsAsync()
+    public async Task<List<GetProjectDto>> GetAllProjectsAsync(string searchTerm = null)
     {
-        var projects = await _projectRepository.GetAllProjectsAsync();
+        var projects = await _projectRepository.GetAllProjectsAsync(searchTerm);
         var projectDtos = new List<GetProjectDto>();
 
         foreach (var project in projects)

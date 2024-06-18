@@ -14,9 +14,9 @@ public class EmployeeService : IEmployeeService
         _employeeRepository = employeeRepository;
     }
 
-    public async Task<List<GetEmployeeDto>> GetAllEmployeesAsync()
+    public async Task<List<GetEmployeeDto>> GetAllEmployeesAsync(string searchTerm = null)
     {
-        var employees = await _employeeRepository.GetAllEmployeesAsync();
+        var employees = await _employeeRepository.GetAllEmployeesAsync(searchTerm);
         var employeeDtos = new List<GetEmployeeDto>();
 
         foreach (var employee in employees)

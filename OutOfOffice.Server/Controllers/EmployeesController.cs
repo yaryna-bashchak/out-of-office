@@ -17,11 +17,11 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<GetEmployeeDto>>> GetAllEmployeesAsync()
+    public async Task<ActionResult<List<GetEmployeeDto>>> GetAllEmployeesAsync([FromQuery] string searchTerm = null)
     {
         try
         {
-            var employees = await _employeeService.GetAllEmployeesAsync();
+            var employees = await _employeeService.GetAllEmployeesAsync(searchTerm);
             return Ok(employees);
         }
         catch (Exception ex)

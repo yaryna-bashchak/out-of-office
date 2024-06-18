@@ -16,7 +16,7 @@ public class LeaveRequestRepository : ILeaveRequestRepository
         _employeeRepository = new EmployeeRepository(_connectionString);
     }
 
-    public async Task<List<LeaveRequest>> GetAllLeaveRequestsAsync()
+    public async Task<List<LeaveRequest>> GetAllLeaveRequestsAsync(string searchTerm = null)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -31,6 +31,11 @@ public class LeaveRequestRepository : ILeaveRequestRepository
                 LEFT JOIN RequestTypes rt ON lr.RequestTypeId = rt.Id
                 LEFT JOIN LeaveRequestStatuses s ON lr.StatusId = s.Id";
 
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query += " WHERE lr.Id LIKE @SearchTerm";
+            }
+
             var leaveRequests = await connection.QueryAsync<LeaveRequest, AbsenceReason, RequestType, LeaveRequestStatus, LeaveRequest>(
                 query,
                 (leaveRequest, absenceReason, requestType, status) =>
@@ -40,6 +45,7 @@ public class LeaveRequestRepository : ILeaveRequestRepository
                     leaveRequest.Status = status;
                     return leaveRequest;
                 },
+                new { SearchTerm = $"%{searchTerm}%" },
                 splitOn: "Id");
 
             foreach (var leaveRequest in leaveRequests)

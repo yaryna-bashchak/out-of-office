@@ -18,7 +18,7 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
         _employeeRepository = new EmployeeRepository(_connectionString);
     }
 
-    public async Task<List<ApprovalRequest>> GetAllApprovalRequestsAsync()
+    public async Task<List<ApprovalRequest>> GetAllApprovalRequestsAsync(string searchTerm = null)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
@@ -29,6 +29,11 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
                 FROM ApprovalRequests ar
                 LEFT JOIN ApprovalRequestStatuses s ON ar.StatusId = s.Id";
 
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query += " WHERE ar.Id LIKE @SearchTerm";
+            }
+
             var approvalRequests = await connection.QueryAsync<ApprovalRequest, ApprovalRequestStatus, ApprovalRequest>(
                 query,
                 (approvalRequest, approvalRequestStatus) =>
@@ -36,6 +41,7 @@ public class ApprovalRequestRepository : IApprovalRequestRepository
                     approvalRequest.Status = approvalRequestStatus;
                     return approvalRequest;
                 },
+                new { SearchTerm = $"%{searchTerm}%" },
                 splitOn: "Id");
 
             foreach (var approvalRequest in approvalRequests)

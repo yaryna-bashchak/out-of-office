@@ -4,7 +4,7 @@ namespace OutOfOffice.Interfaces.Repositories;
 
 public interface IEmployeeRepository
 {
-    Task<List<Employee>> GetAllEmployeesAsync();
+    Task<List<Employee>> GetAllEmployeesAsync(string searchTerm = null);
     Task<Employee> GetEmployeeByIdAsync(int id);
     Task<Employee> AddEmployeeAsync(Employee employee);
     Task<Employee> UpdateEmployeeAsync(Employee employee);

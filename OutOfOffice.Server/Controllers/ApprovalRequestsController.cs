@@ -17,11 +17,11 @@ public class ApprovalRequestsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetApprovalRequestDto>>> GetAllApprovalRequestsAsync()
+    public async Task<ActionResult<IEnumerable<GetApprovalRequestDto>>> GetAllApprovalRequestsAsync([FromQuery] string searchTerm = null)
     {
         try
         {
-            var approvalRequests = await _approvalRequestService.GetAllApprovalRequestsAsync();
+            var approvalRequests = await _approvalRequestService.GetAllApprovalRequestsAsync(searchTerm);
             return Ok(approvalRequests);
         }
         catch (Exception ex)

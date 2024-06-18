@@ -17,11 +17,11 @@ public class LeaveRequestsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<GetLeaveRequestDto>>> GetAllLeaveRequestsAsync()
+    public async Task<ActionResult<IEnumerable<GetLeaveRequestDto>>> GetAllLeaveRequestsAsync([FromQuery] string searchTerm = null)
     {
         try
         {
-            var leaveRequests = await _leaveRequestService.GetAllLeaveRequestsAsync();
+            var leaveRequests = await _leaveRequestService.GetAllLeaveRequestsAsync(searchTerm);
             return Ok(leaveRequests);
         }
         catch (Exception ex)

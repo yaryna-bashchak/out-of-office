@@ -6,7 +6,7 @@ namespace OutOfOffice.Interfaces.Services;
 
 public interface IProjectService
 {
-    Task<List<GetProjectDto>> GetAllProjectsAsync();
+    Task<List<GetProjectDto>> GetAllProjectsAsync(string searchTerm = null);
     Task<GetProjectDto> GetProjectByIdAsync(int id);
     Task<GetProjectDto> AddProjectAsync(AddProjectDto projectDto);
     Task<GetProjectDto> UpdateProjectAsync(int id, UpdateProjectDto projectDto);
