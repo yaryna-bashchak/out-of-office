@@ -46,7 +46,7 @@ const ProjectEditor = () => {
 
     const project = id ? projects.find(proj => proj.id === parseInt(id)) : {
         startDate: '',
-        endDate: '',
+        endDate: null,
         comment: '',
         projectManager: { id: 0, fullName: '' } as Employee,
         projectType: { id: 0, name: '' } as ProjectType,
@@ -57,7 +57,7 @@ const ProjectEditor = () => {
         defaultValues: {
             ...project,
             startDate: project?.startDate ? formatDateForInput(project.startDate) : '',
-            endDate: project?.endDate ? formatDateForInput(project.endDate) : '',
+            endDate: project?.endDate ? formatDateForInput(project.endDate) : null,
         },
         mode: 'onSubmit',
     });
@@ -67,7 +67,7 @@ const ProjectEditor = () => {
             reset({
                 ...project,
                 startDate: project?.startDate ? formatDateForInput(project.startDate) : '',
-                endDate: project?.endDate ? formatDateForInput(project.endDate) : '',
+                endDate: project?.endDate ? formatDateForInput(project.endDate) : null,
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

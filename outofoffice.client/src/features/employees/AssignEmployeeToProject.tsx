@@ -46,7 +46,7 @@ const AssignEmployeeToProject = () => {
 
     const projectEmployee = {
         startDate: '',
-        endDate: '',
+        endDate: null,
         employeeId: id ?? 0,
         projectId: 0,
     } as ProjectEmployee;
@@ -55,7 +55,7 @@ const AssignEmployeeToProject = () => {
         defaultValues: {
             ...projectEmployee,
             startDate: projectEmployee?.startDate ? formatDateForInput(projectEmployee.startDate) : '',
-            endDate: projectEmployee?.endDate ? formatDateForInput(projectEmployee.endDate) : '',
+            endDate: projectEmployee?.endDate ? formatDateForInput(projectEmployee.endDate) : null,
         },
         mode: 'onSubmit',
     });
@@ -65,7 +65,7 @@ const AssignEmployeeToProject = () => {
             ...data,
             employeeId: id ? parseInt(id) : 0,
             startDate: formatDateForApi(data.startDate),
-            endDate: data.endDate && formatDateForApi(data.endDate),
+            endDate: data.endDate ? formatDateForApi(data.endDate) : null,
         };
 
         await addProjectEmployee(transformedData);
