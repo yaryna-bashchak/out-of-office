@@ -8,6 +8,7 @@ import ProjectContext from '../../app/context/ProjectContext';
 import { Project } from '../../app/models/project';
 import BoldTableCell from "../../app/components/BoldTableCell";
 import UserRoleContext from '../../app/context/UserRoleContext';
+import SearchLine from '../../app/components/SearchLine';
 
 const ProjectList = () => {
     const theme = useTheme();
@@ -19,7 +20,7 @@ const ProjectList = () => {
         throw new Error('ProjectList must be used within an ProjectProvider and UserRoleProvider');
     }
 
-    const { projects } = context;
+    const { projects, setSearchTerm } = context;
     const { userRole } = userRoleContext;
 
     const getSortableValue = (project: Project, key: string) => {
@@ -54,44 +55,51 @@ const ProjectList = () => {
         navigate(`/projects/${id}`);
     }
 
+    const handleSearch = (term: string) => {
+        setSearchTerm(term);
+    };
+
     return (
-        <>
+        <Box sx={{ minWidth: '800px' }}>
             <Box display='flex' justifyContent='space-between'>
                 <Typography sx={{ p: 2, fontWeight: 'bold', color: theme.palette.primary.main }} variant='h4'>Projects</Typography>
                 {userRole === 'Project Manager' && <Button onClick={() => handleAddProject()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>}
             </Box>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <SortableTableCell label="ID" sortKey="id" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Project Manager" sortKey="projectManager.fullName" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Start Date" sortKey="startDate" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="End Date" sortKey="endDate" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Project Type" sortKey="projectType.name" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Status" sortKey="status.name" sortConfig={sortConfig} handleSort={handleSort} />
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sortedProjects.map((project) => (
-                            <TableRow key={project.id}>
-                                <TableCell>{project.id} </TableCell>
-                                <BoldTableCell>{project.projectManager.fullName}</BoldTableCell>
-                                <TableCell>{new Date(project.startDate).toLocaleDateString()}</TableCell>
-                                <TableCell>{project.endDate && new Date(project.endDate).toLocaleDateString()}</TableCell>
-                                <TableCell>{project.projectType.name}</TableCell>
-                                <TableCell>{project.status.name}</TableCell>
-                                <TableCell>
-                                    {userRole === 'Project Manager' && <EditButton id={project.id} handleEdit={handleEditProject} />}
-                                    <ViewButton id={project.id} handleView={handleViewProject} />
-                                </TableCell>
+            <SearchLine handleSearch={handleSearch} label='id' styles={{ mb: '16px' }} />
+            {sortedProjects.length === 0 ?
+                <Typography>There is no items.</Typography> :
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <SortableTableCell label="ID" sortKey="id" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Project Manager" sortKey="projectManager.fullName" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Start Date" sortKey="startDate" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="End Date" sortKey="endDate" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Project Type" sortKey="projectType.name" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Status" sortKey="status.name" sortConfig={sortConfig} handleSort={handleSort} />
+                                <TableCell></TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </>
+                        </TableHead>
+                        <TableBody>
+                            {sortedProjects.map((project) => (
+                                <TableRow key={project.id}>
+                                    <TableCell>{project.id} </TableCell>
+                                    <BoldTableCell>{project.projectManager.fullName}</BoldTableCell>
+                                    <TableCell>{new Date(project.startDate).toLocaleDateString()}</TableCell>
+                                    <TableCell>{project.endDate && new Date(project.endDate).toLocaleDateString()}</TableCell>
+                                    <TableCell>{project.projectType.name}</TableCell>
+                                    <TableCell>{project.status.name}</TableCell>
+                                    <TableCell>
+                                        {userRole === 'Project Manager' && <EditButton id={project.id} handleEdit={handleEditProject} />}
+                                        <ViewButton id={project.id} handleView={handleViewProject} />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>}
+        </Box>
     );
 };
 

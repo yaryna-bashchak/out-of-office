@@ -22,7 +22,7 @@ const ApprovalRequestDetails = () => {
     };
 
     return (
-        <Box sx={{ p: 4 }}>
+        <Box sx={{ p: 4, minWidth: '800px' }}>
             <Typography variant="h3" sx={{ mb: 4, fontWeight: 'bold', color: theme.palette.primary.main }}>
                 Approval Request Details
             </Typography>

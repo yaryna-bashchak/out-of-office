@@ -10,6 +10,7 @@ import SortableTableCell from '../../app/components/SortableTableCell';
 import { getStatusStyles } from '../../app/components/getStatusStyles';
 import BoldTableCell from "../../app/components/BoldTableCell";
 import UserRoleContext from '../../app/context/UserRoleContext';
+import SearchLine from '../../app/components/SearchLine';
 
 const LeaveRequestList = () => {
     const theme = useTheme();
@@ -21,7 +22,7 @@ const LeaveRequestList = () => {
         throw new Error('LeaveRequestList must be used within a LeaveRequestProvider and UserRoleProvider');
     }
 
-    const { leaveRequests, editLeaveRequestStatus, statuses } = context;
+    const { leaveRequests, editLeaveRequestStatus, statuses, setSearchTerm } = context;
     const { userRole } = userRoleContext;
 
     const getSortableValue = (leaveRequest: LeaveRequest, key: string) => {
@@ -72,51 +73,58 @@ const LeaveRequestList = () => {
         }
     }
 
+    const handleSearch = (term: string) => {
+        setSearchTerm(term);
+    };
+
     return (
-        <Box>
+        <Box sx={{ minWidth: '800px' }}>
             <Box display='flex' justifyContent='space-between'>
                 <Typography sx={{ p: 2, fontWeight: 'bold', color: theme.palette.primary.main }} variant='h4'>Leave Requests</Typography>
                 {userRole === 'Employee' && <Button onClick={() => handleAddLeaveRequest()} sx={{ m: 2 }} size='large' variant='contained'>Add</Button>}
             </Box>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <SortableTableCell label="ID" sortKey="id" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Employee" sortKey="employee.fullName" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Absence Reason" sortKey="absenceReason.name" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Request Type" sortKey="requestType.name" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Start Date" sortKey="startDate" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="End Date" sortKey="endDate" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Hours" sortKey="hours" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Status" sortKey="status.name" sortConfig={sortConfig} handleSort={handleSort} />
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sortedLeaveRequests.map((leaveRequest) => (
-                            <TableRow key={leaveRequest.id}>
-                                <TableCell>{leaveRequest.id}</TableCell>
-                                <BoldTableCell>{leaveRequest.employee.fullName}</BoldTableCell>
-                                <TableCell>{leaveRequest.absenceReason.name}</TableCell>
-                                <TableCell>{leaveRequest.requestType.name}</TableCell>
-                                <TableCell>{new Date(leaveRequest.startDate).toLocaleDateString()}</TableCell>
-                                <TableCell>{new Date(leaveRequest.endDate).toLocaleDateString()}</TableCell>
-                                <TableCell align='center'>{leaveRequest.hours}</TableCell>
-                                <TableCell><Typography align='center' sx={getStatusStyles(leaveRequest.status.name)}>{leaveRequest.status.name}</Typography></TableCell>
-                                <TableCell>
-                                    {userRole === 'Employee' && <CancelButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleCancel={handleCancelLeaveRequest} />}
-                                    <ViewButton id={leaveRequest.id} handleView={handleViewLeaveRequest} />
-                                    {userRole === 'Employee' && <>
-                                        <EditButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleEdit={handleEditLeaveRequest} />
-                                        <SubmitButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleSubmit={handleSubmitLeaveRequest} />
-                                    </>}
-                                </TableCell>
+            <SearchLine handleSearch={handleSearch} label='id' styles={{ mb: '16px' }} />
+            {sortedLeaveRequests.length === 0 ?
+                <Typography>There is no items.</Typography> :
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <SortableTableCell label="ID" sortKey="id" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Employee" sortKey="employee.fullName" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Absence Reason" sortKey="absenceReason.name" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Request Type" sortKey="requestType.name" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Start Date" sortKey="startDate" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="End Date" sortKey="endDate" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Hours" sortKey="hours" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Status" sortKey="status.name" sortConfig={sortConfig} handleSort={handleSort} />
+                                <TableCell></TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer >
+                        </TableHead>
+                        <TableBody>
+                            {sortedLeaveRequests.map((leaveRequest) => (
+                                <TableRow key={leaveRequest.id}>
+                                    <TableCell>{leaveRequest.id}</TableCell>
+                                    <BoldTableCell>{leaveRequest.employee.fullName}</BoldTableCell>
+                                    <TableCell>{leaveRequest.absenceReason.name}</TableCell>
+                                    <TableCell>{leaveRequest.requestType.name}</TableCell>
+                                    <TableCell>{new Date(leaveRequest.startDate).toLocaleDateString()}</TableCell>
+                                    <TableCell>{new Date(leaveRequest.endDate).toLocaleDateString()}</TableCell>
+                                    <TableCell align='center'>{leaveRequest.hours}</TableCell>
+                                    <TableCell><Typography align='center' sx={getStatusStyles(leaveRequest.status.name)}>{leaveRequest.status.name}</Typography></TableCell>
+                                    <TableCell>
+                                        {userRole === 'Employee' && <CancelButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleCancel={handleCancelLeaveRequest} />}
+                                        <ViewButton id={leaveRequest.id} handleView={handleViewLeaveRequest} />
+                                        {userRole === 'Employee' && <>
+                                            <EditButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleEdit={handleEditLeaveRequest} />
+                                            <SubmitButton id={leaveRequest.id} statusName={leaveRequest.status.name} handleSubmit={handleSubmitLeaveRequest} />
+                                        </>}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer >}
         </Box>
     );
 };

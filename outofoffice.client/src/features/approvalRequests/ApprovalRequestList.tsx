@@ -8,6 +8,7 @@ import { SortConfig, useSortableData } from "../../app/hooks/useSortableData";
 import { ApprovalRequest, ApprovalRequestPayload } from "../../app/models/approvalRequest";
 import { ApproveButton, RejectButton, ViewButton } from "../../app/components/ListButtons";
 import BoldTableCell from "../../app/components/BoldTableCell";
+import SearchLine from '../../app/components/SearchLine';
 
 const ApprovalRequestList = () => {
     const theme = useTheme();
@@ -18,7 +19,7 @@ const ApprovalRequestList = () => {
         throw new Error('ApprovalRequestList must be used within an ApprovalRequestProvider');
     }
 
-    const { approvalRequests, statuses, editApprovalRequest } = context;
+    const { approvalRequests, statuses, editApprovalRequest, setSearchTerm } = context;
 
     const getSortableValue = (approvalRequest: ApprovalRequest, key: string) => {
         switch (key) {
@@ -59,42 +60,49 @@ const ApprovalRequestList = () => {
         navigate(`/approval-requests/${id}/reject`);
     }
 
+    const handleSearch = (term: string) => {
+        setSearchTerm(term);
+    };
+
     return (
-        <>
+        <Box sx={{ minWidth: '800px' }}>
             <Box display='flex' justifyContent='space-between'>
                 <Typography sx={{ p: 2, fontWeight: 'bold', color: theme.palette.primary.main }} variant='h4'>Approval Requests</Typography>
             </Box>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <SortableTableCell label="ID" sortKey="id" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Approver" sortKey="approver.fullName" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Employee" sortKey="leaveRequest.employee.fullName" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Leave Request Type" sortKey="leaveRequest.requestType.name" sortConfig={sortConfig} handleSort={handleSort} />
-                            <SortableTableCell label="Status" sortKey="status.name" sortConfig={sortConfig} handleSort={handleSort} />
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sortedApprovalRequests.map((approvalRequest) => (
-                            <TableRow key={approvalRequest.id}>
-                                <TableCell>{approvalRequest.id}</TableCell>
-                                <BoldTableCell>{approvalRequest.approver.fullName}</BoldTableCell>
-                                <TableCell>{approvalRequest.leaveRequest.employee.fullName}</TableCell>
-                                <TableCell>{approvalRequest.leaveRequest.requestType.name}</TableCell>
-                                <TableCell><Typography align='center' sx={getStatusStyles(approvalRequest.status.name)}>{approvalRequest.status.name}</Typography></TableCell>
-                                <TableCell>
-                                    <RejectButton id={approvalRequest.id} statusName={approvalRequest.status.name} handleReject={handleRejectRequest} />
-                                    <ViewButton id={approvalRequest.id} handleView={handleViewApprovalRequest} />
-                                    <ApproveButton id={approvalRequest.id} statusName={approvalRequest.status.name} handleApprove={handleApproveRequest} />
-                                </TableCell>
+            <SearchLine handleSearch={handleSearch} label='id' styles={{ mb: '16px' }} />
+            {sortedApprovalRequests.length === 0 ?
+                <Typography>There is no items.</Typography> :
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <SortableTableCell label="ID" sortKey="id" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Approver" sortKey="approver.fullName" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Employee" sortKey="leaveRequest.employee.fullName" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Leave Request Type" sortKey="leaveRequest.requestType.name" sortConfig={sortConfig} handleSort={handleSort} />
+                                <SortableTableCell label="Status" sortKey="status.name" sortConfig={sortConfig} handleSort={handleSort} />
+                                <TableCell></TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer >
-        </>
+                        </TableHead>
+                        <TableBody>
+                            {sortedApprovalRequests.map((approvalRequest) => (
+                                <TableRow key={approvalRequest.id}>
+                                    <TableCell>{approvalRequest.id}</TableCell>
+                                    <BoldTableCell>{approvalRequest.approver.fullName}</BoldTableCell>
+                                    <TableCell>{approvalRequest.leaveRequest.employee.fullName}</TableCell>
+                                    <TableCell>{approvalRequest.leaveRequest.requestType.name}</TableCell>
+                                    <TableCell><Typography align='center' sx={getStatusStyles(approvalRequest.status.name)}>{approvalRequest.status.name}</Typography></TableCell>
+                                    <TableCell>
+                                        <RejectButton id={approvalRequest.id} statusName={approvalRequest.status.name} handleReject={handleRejectRequest} />
+                                        <ViewButton id={approvalRequest.id} handleView={handleViewApprovalRequest} />
+                                        <ApproveButton id={approvalRequest.id} statusName={approvalRequest.status.name} handleApprove={handleApproveRequest} />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer >}
+        </Box>
     );
 };
 

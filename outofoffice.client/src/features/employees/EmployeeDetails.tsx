@@ -14,7 +14,7 @@ const EmployeeDetails = () => {
     const navigate = useNavigate();
 
     if (!projectContext || !employeeContext) {
-        throw new Error('ProjectDetails must be used within a ProjectProvider and EmployeeProvider');
+        throw new Error('EmployeeDetails must be used within a ProjectProvider and EmployeeProvider');
     }
 
     const { projects } = projectContext;
@@ -26,7 +26,7 @@ const EmployeeDetails = () => {
     };
 
     return (
-        <Box sx={{ p: 4 }}>
+        <Box sx={{ p: 4, minWidth: '800px' }}>
             <Typography variant="h3" sx={{ mb: 4, fontWeight: 'bold', color: theme.palette.primary.main }}>
                 {employee?.fullName}
             </Typography>
