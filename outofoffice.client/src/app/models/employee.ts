@@ -4,7 +4,7 @@ export interface Employee {
   id: number
   fullName: string
   outOfOfficeBalance: number
-  peoplePartner: PeoplePartner | null
+  peoplePartner: PeoplePartner
   position: Position
   status: EmployeeStatus
   subdivision: Subdivision
@@ -37,5 +37,5 @@ export interface EmployeePayload {
   positionId: number
   statusId: number
   subdivisionId: number
-  peoplePartnerId: number | null
+  peoplePartnerId: number
 }

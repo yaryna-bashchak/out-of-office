@@ -7,7 +7,7 @@ public class Employee
     public int SubdivisionId { get; set; }
     public int PositionId { get; set; }
     public int StatusId { get; set; }
-    public int? PeoplePartnerId { get; set; }
+    public int PeoplePartnerId { get; set; }
     public decimal OutOfOfficeBalance { get; set; }
 
     public Employee PeoplePartner { get; set; }

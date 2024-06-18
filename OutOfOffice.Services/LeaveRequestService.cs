@@ -169,11 +169,7 @@ public class LeaveRequestService : ILeaveRequestService
     {
         var approverIds = await _employeeRepository.GetAllProjectManagerIdsOfEmployeeAsync(employeeId);
         var employee = await _employeeRepository.GetEmployeeByIdAsync(employeeId);
-
-        if (employee.PeoplePartnerId != null)
-        {
-            approverIds.Add(employee.PeoplePartnerId.Value);
-        }
+        approverIds.Add(employee.PeoplePartnerId);
 
         foreach (var approverId in approverIds)
         {

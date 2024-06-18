@@ -27,26 +27,34 @@ GO
 
 IF NOT EXISTS (SELECT * FROM Employees)
 INSERT INTO Employees (FullName, SubdivisionID, PositionID, StatusID, PeoplePartnerID, OutOfOfficeBalance)
-VALUES ('Kylo Silva',		1, 4, 1, NULL, 15.0),
-		('Carolina Zhang',	1, 3, 1, NULL, 10.0),
-		('Dion Sheppard',	1, 3, 1, 2, 12.5),
-		('Erin Thomas',		1, 3, 1, 2, 17.0),
-		('Mack Hurst',		2, 3, 1, 3, 13.0),
-		('Desmond Small',	2, 3, 1, 4, 7.5),
-		('Matilda Boyd',	1, 2, 1, 3, 5.0),
-		('Dean Payne',		1, 2, 1, 3, 8.5),
-		('London Ali',		4, 2, 1, 6, 10.0),
-		('Arjun Schroeder',	4, 2, 1, 1, 11.0),
-		('Cameron Harvey',	5, 2, 1, 2, 17.25),
-        ('Jane Smith',		1, 1, 1, 6, 11.0),
-        ('Serena Wilkerson',1, 1, 1, 6, 18.0),
-        ('Carmelo Horn',	2, 1, 2, 2, 13.75),
-        ('Avah Swanson',	2, 1, 1, 4, 14.0),
-        ('Hugo Vaughan',	4, 1, 1, 4, 15.625),
-        ('Nancy Salinas',	4, 1, 1, 3, 9.0),
-        ('Edgar Lowe',		4, 1, 2, 5, 4.5),
-        ('Amari Cox',		5, 1, 1, 5, 10.0),
-        ('Connor Ortiz',	5, 1, 1, 2, 11.0);
+BEGIN
+    VALUES ('Kylo Silva',		1, 4, 1, NULL, 15.0),
+            ('Carolina Zhang',	1, 3, 1, NULL, 10.0),
+            ('Dion Sheppard',	1, 3, 1, 2, 12.5),
+            ('Erin Thomas',		1, 3, 1, 2, 17.0),
+            ('Mack Hurst',		2, 3, 1, 3, 13.0),
+            ('Desmond Small',	2, 3, 1, 4, 7.5),
+            ('Matilda Boyd',	1, 2, 1, 3, 5.0),
+            ('Dean Payne',		1, 2, 1, 3, 8.5),
+            ('London Ali',		4, 2, 1, 6, 10.0),
+            ('Arjun Schroeder',	4, 2, 1, 1, 11.0),
+            ('Cameron Harvey',	5, 2, 1, 2, 17.25),
+            ('Jane Smith',		1, 1, 1, 6, 11.0),
+            ('Serena Wilkerson',1, 1, 1, 6, 18.0),
+            ('Carmelo Horn',	2, 1, 2, 2, 13.75),
+            ('Avah Swanson',	2, 1, 1, 4, 14.0),
+            ('Hugo Vaughan',	4, 1, 1, 4, 15.625),
+            ('Nancy Salinas',	4, 1, 1, 3, 9.0),
+            ('Edgar Lowe',		4, 1, 2, 5, 4.5),
+            ('Amari Cox',		5, 1, 1, 5, 10.0),
+            ('Connor Ortiz',	5, 1, 1, 2, 11.0);
+
+    UPDATE Employees SET PeoplePartnerID = 2 WHERE ID IN (1, 2);
+END
+GO
+
+ALTER TABLE Employees
+ALTER COLUMN PeoplePartnerID INT NOT NULL;
 GO
 
 -- Insert data into Leave Requests and related tables if they are empty
@@ -80,7 +88,7 @@ INSERT INTO LeaveRequests (EmployeeID, AbsenceReasonID, StartDate, EndDate, Requ
     (14, 1, '2024-01-15', '2024-01-15', 2, 4,	 4, 'Dentist in the morning'),
     (15, 2, '2024-01-10', '2024-01-12', 1, NULL, 3, 'Ski trip'),
     (16, 1, '2024-02-01', '2024-02-01', 1, NULL, 4, 'Personal day'),
-    (17, 2, '2024-03-05', '2024-03-05', 1, NULL, 2, 'Child’s school event'),
+    (17, 2, '2024-03-05', '2024-03-05', 1, NULL, 2, 'Childï¿½s school event'),
     (18, 2, '2024-04-07', '2024-04-08', 1, NULL, 5, 'Short vacation'),
     (19, 1, '2024-05-01', '2024-05-01', 2, 3,	 4, 'Doctor visit'),
     (20, 2, '2024-06-14', '2024-06-20', 1, NULL, 1, 'Long vacation'),

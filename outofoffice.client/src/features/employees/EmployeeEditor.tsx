@@ -58,7 +58,7 @@ const EmployeeEditor = () => {
             positionId: data.position.id,
             statusId: data.status.id,
             subdivisionId: data.subdivision.id,
-            peoplePartnerId: data.peoplePartner ? data.peoplePartner.id : null
+            peoplePartnerId: data.peoplePartner.id
         };
         if (id) {
             await editEmployee(parseInt(id), transformedData);
