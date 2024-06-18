@@ -58,7 +58,6 @@ const EmployeeEditor = () => {
             positionId: data.position.id,
             statusId: data.status.id,
             subdivisionId: data.subdivision.id,
-            photo: null,
             peoplePartnerId: data.peoplePartner ? data.peoplePartner.id : null
         };
         if (id) {

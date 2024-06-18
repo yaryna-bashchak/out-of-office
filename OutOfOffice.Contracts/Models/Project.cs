@@ -10,7 +10,7 @@ public class Project
     public int StatusId { get; set; }
     public string Comment { get; set; }
 
-    public Employee ProjectManager { get; set; } = null!;
-    public ProjectType ProjectType { get; set; } = null!;
-    public ProjectStatus Status { get; set; } = null!;
+    public Employee ProjectManager { get; set; }
+    public ProjectType ProjectType { get; set; }
+    public ProjectStatus Status { get; set; }
 }

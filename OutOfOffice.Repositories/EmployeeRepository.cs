@@ -20,7 +20,7 @@ public class EmployeeRepository : IEmployeeRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.Photo, e.PositionId, e.StatusId, e.SubdivisionId, e.PeoplePartnerId,
+                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.PositionId, e.StatusId, e.SubdivisionId, e.PeoplePartnerId,
                    p.Id, p.Name,
                    s.Id, s.Name,
                    sub.Id, sub.Name,
@@ -59,7 +59,7 @@ public class EmployeeRepository : IEmployeeRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.Photo, e.PositionId, e.StatusId, e.SubdivisionId, e.PeoplePartnerId,
+                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.PositionId, e.StatusId, e.SubdivisionId, e.PeoplePartnerId,
                    p.ID as Id, p.Name,
                    s.ID as Id, s.Name,
                    sub.ID as Id, sub.Name,
@@ -99,8 +99,8 @@ public class EmployeeRepository : IEmployeeRepository
         {
             await connection.OpenAsync();
             var query = @"
-                INSERT INTO Employees (Fullname, SubdivisionID, PositionID, StatusID, PeoplePartnerID, OutOfOfficeBalance, Photo)
-                VALUES (@Fullname, @SubdivisionID, @PositionID, @StatusID, @PeoplePartnerID, @OutOfOfficeBalance, @Photo);
+                INSERT INTO Employees (Fullname, SubdivisionID, PositionID, StatusID, PeoplePartnerID, OutOfOfficeBalance)
+                VALUES (@Fullname, @SubdivisionID, @PositionID, @StatusID, @PeoplePartnerID, @OutOfOfficeBalance);
                 SELECT CAST(SCOPE_IDENTITY() as int);";
 
             try
@@ -127,8 +127,7 @@ public class EmployeeRepository : IEmployeeRepository
                     PositionID = @PositionID,
                     StatusID = @StatusID,
                     PeoplePartnerID = @PeoplePartnerID, 
-                    OutOfOfficeBalance = @OutOfOfficeBalance, 
-                    Photo = @Photo
+                    OutOfOfficeBalance = @OutOfOfficeBalance,
                 WHERE id = @id";
 
             try
@@ -242,7 +241,7 @@ public class EmployeeRepository : IEmployeeRepository
         {
             await connection.OpenAsync();
             var query = @"
-                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.Photo, e.PositionId, e.StatusId, e.SubdivisionId, e.PeoplePartnerId,
+                SELECT e.Id, e.FullName, e.OutOfOfficeBalance, e.PositionId, e.StatusId, e.SubdivisionId, e.PeoplePartnerId,
                    p.Id, p.Name,
                    s.Id, s.Name,
                    sub.Id, sub.Name,

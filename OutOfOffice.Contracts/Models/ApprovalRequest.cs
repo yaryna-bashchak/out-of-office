@@ -8,7 +8,7 @@ public class ApprovalRequest
     public int StatusId { get; set; }
     public string Comment { get; set; }
 
-    public Employee Approver { get; set; } = null!;
-    public LeaveRequest LeaveRequest { get; set; } = null!;
-    public ApprovalRequestStatus Status { get; set; } = null!;
+    public Employee Approver { get; set; }
+    public LeaveRequest LeaveRequest { get; set; }
+    public ApprovalRequestStatus Status { get; set; }
 }

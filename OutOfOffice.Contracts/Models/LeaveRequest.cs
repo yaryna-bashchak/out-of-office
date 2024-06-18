@@ -12,8 +12,8 @@ public class LeaveRequest
     public int StatusId { get; set; }
     public string Comment { get; set; }
 
-    public AbsenceReason AbsenceReason { get; set; } = null!;
-    public Employee Employee { get; set; } = null!;
-    public RequestType RequestType { get; set; } = null!;
-    public LeaveRequestStatus Status { get; set; } = null!;
+    public AbsenceReason AbsenceReason { get; set; }
+    public Employee Employee { get; set; }
+    public RequestType RequestType { get; set; }
+    public LeaveRequestStatus Status { get; set; }
 }

@@ -8,6 +8,6 @@ public class ProjectEmployee
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
 
-    public Employee Employee { get; set; } = null!;
-    public Project Project { get; set; } = null!;
+    public Employee Employee { get; set; }
+    public Project Project { get; set; }
 }

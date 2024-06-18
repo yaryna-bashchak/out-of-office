@@ -30,9 +30,8 @@ CREATE TABLE Employees (
     SubdivisionID INT NOT NULL,
     PositionID INT NOT NULL,
     StatusID INT NOT NULL,
-    PeoplePartnerID INT, -- from the “Employee” table with “HR Manager” position
+    PeoplePartnerID INT, -- from the ï¿½Employeeï¿½ table with ï¿½HR Managerï¿½ position
     OutOfOfficeBalance DECIMAL(6,3) NOT NULL,
-    Photo VARBINARY(MAX),
 	CONSTRAINT FK_SubdivisionID FOREIGN KEY (SubdivisionID) REFERENCES Subdivisions(ID),
 	CONSTRAINT FK_PositionID FOREIGN KEY (PositionID) REFERENCES Positions(ID),
 	CONSTRAINT FK_EmployeeStatusID FOREIGN KEY (StatusID) REFERENCES EmployeeStatuses(ID)
@@ -128,7 +127,7 @@ CREATE TABLE Projects (
 	ProjectTypeID INT NOT NULL,
 	StartDate DATE NOT NULL,
     EndDate DATE,
-	ProjectManagerID INT NOT NULL, -- from the “Employee” table with “Project Manager” position
+	ProjectManagerID INT NOT NULL, -- from the ï¿½Employeeï¿½ table with ï¿½Project Managerï¿½ position
 	StatusID INT NOT NULL,
 	Comment VARCHAR(MAX),
 	CONSTRAINT FK_ProjectTypeID FOREIGN KEY (ProjectTypeID) REFERENCES ProjectTypes(ID),
