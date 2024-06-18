@@ -54,6 +54,10 @@ const EmployeeList = () => {
         navigate(`/employees/${id}`);
     }
 
+    function handleAssignEmployeeToProject(id: number): void {
+        navigate(`/employees/${id}/assign-to-project`);
+    }
+
     return (
         <>
             <Box display='flex' justifyContent='space-between'>
@@ -86,6 +90,7 @@ const EmployeeList = () => {
                                 <TableCell align='center'>{employee.outOfOfficeBalance}</TableCell>
                                 <TableCell>
                                     <EditButton id={employee.id} handleEdit={handleEditEmployee} />
+                                    <Button size="small" onClick={() => handleAssignEmployeeToProject(employee.id)}>Assign to project</Button>
                                     <ViewButton id={employee.id} handleView={handleViewEmployee} />
                                 </TableCell>
                             </TableRow>

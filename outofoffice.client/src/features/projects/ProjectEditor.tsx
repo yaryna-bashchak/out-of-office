@@ -76,7 +76,7 @@ const ProjectEditor = () => {
     const onSubmit = async (data: Project) => {
         const transformedData: ProjectPayload = {
             startDate: formatDateForApi(data.startDate),
-            endDate: data.endDate ? formatDateForApi(data.endDate) : null,
+            endDate: data.endDate && formatDateForApi(data.endDate),
             comment: data.comment,
             projectTypeId: data.projectType.id,
             projectManagerId: data.projectManager.id,

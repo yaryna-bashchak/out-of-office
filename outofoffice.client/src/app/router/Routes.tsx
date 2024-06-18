@@ -14,6 +14,7 @@ import LeaveRejectionComment from "../../features/approvalRequests/LeaveRejectio
 import ProjectList from "../../features/projects/ProjectList";
 import ProjectEditor from "../../features/projects/ProjectEditor";
 import ProjectDetails from "../../features/projects/ProjectDetails";
+import AssignEmployeeToProject from "../../features/employees/AssignEmployeeToProject";
 
 export const router = createBrowserRouter([
     {
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
             { path: 'employees', element: <EmployeeList /> },
             { path: 'employees/:id', element: <EmployeeDetails /> },
             { path: 'employees/:id/edit', element: <EmployeeEditor /> },
+            { path: 'employees/:id/assign-to-project', element: <AssignEmployeeToProject /> },
             { path: 'employees/new', element: <EmployeeEditor /> },
             { path: 'leave-requests', element: <LeaveRequestList /> },
             { path: 'leave-requests/:id', element: <LeaveRequestDetails /> },
