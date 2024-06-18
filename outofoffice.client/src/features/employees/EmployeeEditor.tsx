@@ -80,22 +80,22 @@ const EmployeeEditor = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <AppTextInput name="fullName" label="Full Name" control={control} rules={{ required: 'Full Name is required' }} />
+                        <AppTextInput name="fullName" label="Full Name*" control={control} rules={{ required: 'Full Name is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <AppSelectList name="position.id" label="Position" control={control} options={positions} rules={{ validate: value => value !== 0 || 'Position is required' }} />
+                        <AppSelectList name="position.id" label="Position*" control={control} options={positions} rules={{ validate: value => value !== 0 || 'Position is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <AppSelectList name="subdivision.id" label="Subdivision" control={control} options={subdivisions} rules={{ validate: value => value !== 0 || 'Subdivision is required' }} />
+                        <AppSelectList name="subdivision.id" label="Subdivision*" control={control} options={subdivisions} rules={{ validate: value => value !== 0 || 'Subdivision is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <AppSelectList name="status.id" label="Status" control={control} options={statuses} rules={{ validate: value => value !== 0 || 'Status is required' }} />
+                        <AppSelectList name="status.id" label="Status*" control={control} options={statuses} rules={{ validate: value => value !== 0 || 'Status is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <AppSelectList name="peoplePartner.id" label="People Partner" control={control} options={transformEmployees(hrManagers)} rules={{ validate: value => value !== 0 || 'People Partner is required' }} />
+                        <AppSelectList name="peoplePartner.id" label="People Partner*" control={control} options={transformEmployees(hrManagers)} rules={{ validate: value => value !== 0 || 'People Partner is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <AppTextInput type="number" name="outOfOfficeBalance" label="Out-Of-Office Balance" control={control} rules={{
+                        <AppTextInput type="number" name="outOfOfficeBalance" label="Out-Of-Office Balance*" control={control} rules={{
                             required: 'Out-Of-Office Balance is required',
                             min: {
                                 value: 0,

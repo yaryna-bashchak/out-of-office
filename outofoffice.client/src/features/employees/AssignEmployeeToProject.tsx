@@ -29,7 +29,7 @@ const formatDateForApi = (dateString: string) => {
 };
 
 const AssignEmployeeToProject = () => {
- 
+
     const theme = useTheme();
     const employeeContext = useContext(EmployeeContext);
     const projectContext = useContext(ProjectContext);
@@ -45,8 +45,8 @@ const AssignEmployeeToProject = () => {
     const employee = id ? employees.find(emp => emp.id === parseInt(id)) : null;
 
     const projectEmployee = {
-        startDate: '',
-        endDate: null,
+        startDate: ' ',
+        endDate: ' ',
         employeeId: id ?? 0,
         projectId: 0,
     } as ProjectEmployee;
@@ -54,8 +54,8 @@ const AssignEmployeeToProject = () => {
     const { handleSubmit, control, watch } = useForm<ProjectEmployee>({
         defaultValues: {
             ...projectEmployee,
-            startDate: projectEmployee?.startDate ? formatDateForInput(projectEmployee.startDate) : '',
-            endDate: projectEmployee?.endDate ? formatDateForInput(projectEmployee.endDate) : null,
+            startDate: projectEmployee?.startDate ? formatDateForInput(projectEmployee.startDate) : ' ',
+            endDate: projectEmployee?.endDate ? formatDateForInput(projectEmployee.endDate) : ' ',
         },
         mode: 'onSubmit',
     });
@@ -65,7 +65,7 @@ const AssignEmployeeToProject = () => {
             ...data,
             employeeId: id ? parseInt(id) : 0,
             startDate: formatDateForApi(data.startDate),
-            endDate: data.endDate ? formatDateForApi(data.endDate) : null,
+            endDate: data.endDate && data.endDate !== ' ' ? formatDateForApi(data.endDate) : null,
         };
 
         await addProjectEmployee(transformedData);
@@ -86,15 +86,17 @@ const AssignEmployeeToProject = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <AppSelectList name="projectId" label="Project" control={control} options={transformProjects(projects)} rules={{ validate: value => value !== 0 || 'Project is required' }} />
+                        <AppSelectList name="projectId" label="Project*" control={control} options={transformProjects(projects)} rules={{ validate: value => value !== 0 || 'Project is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <AppTextInput type="date" name="startDate" label="Start Date" control={control} rules={{ required: 'Start Date is required' }} />
+                        <AppTextInput type="date" name="startDate" label="Start Date*" control={control} rules={{
+                            validate: value => (value === ' ') ? 'Start Date is required' : true,
+                        }} />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <AppTextInput type="date" name="endDate" label="End Date" control={control} rules={{
                             validate: value => {
-                                if (value) {
+                                if (value && value !== ' ') {
                                     return value >= startDate || 'End Date cannot be earlier than Start Date';
                                 }
                             }

@@ -45,8 +45,8 @@ const ProjectEditor = () => {
     const { projectManagers } = employeeContext;
 
     const project = id ? projects.find(proj => proj.id === parseInt(id)) : {
-        startDate: '',
-        endDate: null,
+        startDate: ' ',
+        endDate: ' ',
         comment: '',
         projectManager: { id: 0, fullName: '' } as Employee,
         projectType: { id: 0, name: '' } as ProjectType,
@@ -56,8 +56,8 @@ const ProjectEditor = () => {
     const { handleSubmit, control, reset, watch } = useForm<Project>({
         defaultValues: {
             ...project,
-            startDate: project?.startDate ? formatDateForInput(project.startDate) : '',
-            endDate: project?.endDate ? formatDateForInput(project.endDate) : null,
+            startDate: project?.startDate ? formatDateForInput(project.startDate) : ' ',
+            endDate: project?.endDate ? formatDateForInput(project.endDate) : ' ',
         },
         mode: 'onSubmit',
     });
@@ -66,8 +66,8 @@ const ProjectEditor = () => {
         if (id) {
             reset({
                 ...project,
-                startDate: project?.startDate ? formatDateForInput(project.startDate) : '',
-                endDate: project?.endDate ? formatDateForInput(project.endDate) : null,
+                startDate: project?.startDate ? formatDateForInput(project.startDate) : ' ',
+                endDate: project?.endDate ? formatDateForInput(project.endDate) : ' ',
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,7 +76,7 @@ const ProjectEditor = () => {
     const onSubmit = async (data: Project) => {
         const transformedData: ProjectPayload = {
             startDate: formatDateForApi(data.startDate),
-            endDate: data.endDate && formatDateForApi(data.endDate),
+            endDate: data.endDate && data.endDate !== ' ' ? formatDateForApi(data.endDate) : null,
             comment: data.comment,
             projectTypeId: data.projectType.id,
             projectManagerId: data.projectManager.id,
@@ -104,25 +104,27 @@ const ProjectEditor = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
-                        <AppSelectList name="projectType.id" label="Project Type" control={control} options={types} rules={{ validate: value => value !== 0 || 'Project Type is required' }} />
+                        <AppSelectList name="projectType.id" label="Project Type*" control={control} options={types} rules={{ validate: value => value !== 0 || 'Project Type is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <AppSelectList name="projectManager.id" label="Project Manager" control={control} options={transformEmployees(projectManagers)} rules={{ validate: value => value !== 0 || 'Project Manager is required' }} />
+                        <AppSelectList name="projectManager.id" label="Project Manager*" control={control} options={transformEmployees(projectManagers)} rules={{ validate: value => value !== 0 || 'Project Manager is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <AppTextInput type="date" name="startDate" label="Start Date" control={control} rules={{ required: 'Start Date is required' }} />
+                        <AppTextInput type="date" name="startDate" label="Start Date*" control={control} rules={{
+                            validate: value => (value === ' ') ? 'Start Date is required' : true
+                        }} />
                     </Grid>
                     <Grid item xs={12} sm={4}>
                         <AppTextInput type="date" name="endDate" label="End Date" control={control} rules={{
                             validate: value => {
-                                if (value) {
+                                if (value && value !== ' ') {
                                     return value >= startDate || 'End Date cannot be earlier than Start Date';
                                 }
                             }
                         }} />
                     </Grid>
                     <Grid item xs={12} sm={4}>
-                        <AppSelectList name="status.id" label="Status" control={control} options={statuses} rules={{ validate: value => value !== 0 || 'Status is required' }} />
+                        <AppSelectList name="status.id" label="Status*" control={control} options={statuses} rules={{ validate: value => value !== 0 || 'Status is required' }} />
                     </Grid>
                     <Grid item xs={12}>
                         <AppTextInput name="comment" label="Comment" multiline={true} rows={4} control={control} />

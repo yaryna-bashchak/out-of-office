@@ -10,7 +10,6 @@ import BoldTableCell from "../../app/components/BoldTableCell";
 import UserRoleContext from '../../app/context/UserRoleContext';
 import SearchLine from '../../app/components/SearchLine';
 
-
 const EmployeeList = () => {
     const theme = useTheme();
     const context = useContext(EmployeeContext);

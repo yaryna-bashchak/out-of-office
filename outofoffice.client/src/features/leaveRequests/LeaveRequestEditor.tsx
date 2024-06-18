@@ -45,8 +45,8 @@ const LeaveRequestEditor = () => {
     const { employees } = employeeContext;
 
     const leaveRequest = id ? leaveRequests.find(req => req.id === parseInt(id)) : {
-        startDate: '',
-        endDate: '',
+        startDate: ' ',
+        endDate: ' ',
         hours: null,
         comment: '',
         absenceReason: { id: 0, name: '' } as AbsenceReason,
@@ -58,8 +58,8 @@ const LeaveRequestEditor = () => {
     const { handleSubmit, control, reset, watch } = useForm<LeaveRequest>({
         defaultValues: {
             ...leaveRequest,
-            startDate: leaveRequest?.startDate ? formatDateForInput(leaveRequest.startDate) : '',
-            endDate: leaveRequest?.endDate ? formatDateForInput(leaveRequest.endDate) : '',
+            startDate: leaveRequest?.startDate ? formatDateForInput(leaveRequest.startDate) : ' ',
+            endDate: leaveRequest?.endDate ? formatDateForInput(leaveRequest.endDate) : ' ',
         },
         mode: 'onSubmit',
     });
@@ -68,8 +68,8 @@ const LeaveRequestEditor = () => {
         if (id) {
             reset({
                 ...leaveRequest,
-                startDate: leaveRequest?.startDate ? formatDateForInput(leaveRequest.startDate) : '',
-                endDate: leaveRequest?.endDate ? formatDateForInput(leaveRequest.endDate) : '',
+                startDate: leaveRequest?.startDate ? formatDateForInput(leaveRequest.startDate) : ' ',
+                endDate: leaveRequest?.endDate ? formatDateForInput(leaveRequest.endDate) : ' ',
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,24 +109,25 @@ const LeaveRequestEditor = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <AppSelectList name="employee.id" label="Employee" control={control} options={transformEmployees(employees)} rules={{ validate: value => value !== 0 || 'Employee is required' }} />
+                        <AppSelectList name="employee.id" label="Employee*" control={control} options={transformEmployees(employees)} rules={{ validate: value => value !== 0 || 'Employee is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <AppSelectList name="absenceReason.id" label="Absence Reason" control={control} options={absenceReasons} rules={{ validate: value => value !== 0 || 'Absence Reason is required' }} />
+                        <AppSelectList name="absenceReason.id" label="Absence Reason*" control={control} options={absenceReasons} rules={{ validate: value => value !== 0 || 'Absence Reason is required' }} />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <AppSelectList name="requestType.id" label="Request Type" control={control} options={types} rules={{ validate: value => value !== 0 || 'Request Type is required' }} />
+                        <AppSelectList name="requestType.id" label="Request Type*" control={control} options={types} rules={{ validate: value => value !== 0 || 'Request Type is required' }} />
                     </Grid>
                     {selectedTypeName === 'Full days' && (
                         <>
                             <Grid item xs={12} sm={6}>
-                                <AppTextInput type="date" name="startDate" label="Start Date" control={control} rules={{ required: 'Start Date is required' }} />
+                                <AppTextInput type="date" name="startDate" label="Start Date*" control={control} rules={{
+                                    validate: value => (value === ' ') ? 'Start Date is required' : true
+                                }} />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <AppTextInput type="date" name="endDate" label="End Date" control={control} rules={{
-                                    required: 'End Date is required',
+                                <AppTextInput type="date" name="endDate" label="End Date*" control={control} rules={{
                                     validate: value => {
-                                        if (!value) {
+                                        if (!value || value === ' ') {
                                             return 'End Date is required';
                                         }
                                         return value >= startDate || 'End Date cannot be earlier than Start Date';
@@ -138,10 +139,10 @@ const LeaveRequestEditor = () => {
                     {selectedTypeName === 'Partial day' && (
                         <>
                             <Grid item xs={12} sm={6}>
-                                <AppTextInput type="date" name="startDate" label="Start Date" control={control} rules={{ required: 'Start Date is required' }} />
+                                <AppTextInput type="date" name="startDate" label="Date*" control={control} rules={{ required: 'Date is required' }} />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <AppTextInput type="number" name="hours" label="Hours" control={control} rules={{
+                                <AppTextInput type="number" name="hours" label="Hours*" control={control} rules={{
                                     required: 'Hours is required',
                                     min: {
                                         value: 1,
