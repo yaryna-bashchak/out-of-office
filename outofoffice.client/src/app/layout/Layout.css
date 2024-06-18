@@ -1,16 +1,22 @@
 .layout {
   display: flex;
+  height: 100vh;
 }
 
 .sidebar {
   width: 240px;
   background-color: #f0f0f0;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0;
+  margin: 0;
+  flex-grow: 1;
 }
 
 .sidebar ul li {
@@ -25,4 +31,13 @@
 .content {
   flex-grow: 1;
   padding: 20px;
+  overflow-y: auto;
+}
+
+.role-switcher {
+  margin-bottom: 20px;
+}
+
+.role-switcher label {
+  margin-right: 10px;
 }
