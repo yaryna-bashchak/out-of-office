@@ -1,8 +1,12 @@
 import { Dispatch, SetStateAction, createContext, ReactNode, useState } from "react";
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const roles: string[] = ['HR Manager', 'Project Manager', 'Employee'] as const;
+export type UserRole = (typeof roles)[number];
+
 interface UserRoleContextType {
-    userRole: 'HR Manager' | 'Project Manager' | 'Employee';
-    setUserRole: Dispatch<SetStateAction<'HR Manager' | 'Project Manager' | 'Employee'>>;
+    userRole: UserRole;
+    setUserRole: Dispatch<SetStateAction<UserRole>>;
 }
 
 const UserRoleContext = createContext<UserRoleContextType | undefined>(undefined);
@@ -12,7 +16,7 @@ interface UserRoleProviderProps {
 }
 
 export const UserRoleProvider = ({ children }: UserRoleProviderProps) => {
-    const [userRole, setUserRole] = useState<'HR Manager' | 'Project Manager' | 'Employee'>('Employee');
+    const [userRole, setUserRole] = useState<UserRole>('Employee');
 
     return (
         <UserRoleContext.Provider value={{ userRole, setUserRole }}>

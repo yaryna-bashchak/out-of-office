@@ -1,7 +1,19 @@
 import { Outlet, Link } from 'react-router-dom';
 import './Layout.css';
 import { useContext } from 'react';
-import UserRoleContext from '../context/UserRoleContext';
+import UserRoleContext, { UserRole, roles } from '../context/UserRoleContext';
+
+interface SidebarLink {
+    link: string;
+    label: string;
+}
+
+const sidebarLinks: SidebarLink[] = [
+    { link: '/employees', label: 'Employees' },
+    { link: '/leave-requests', label: 'Leave Requests' },
+    { link: '/approval-requests', label: 'Approval Requests' },
+    { link: '/projects', label: 'Projects' },
+];
 
 const Layout = () => {
     const userRoleContext = useContext(UserRoleContext);
@@ -13,8 +25,12 @@ const Layout = () => {
     const { userRole, setUserRole } = userRoleContext;
 
     const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setUserRole(event.target.value as 'HR Manager' | 'Project Manager' | 'Employee');
+        setUserRole(event.target.value as UserRole);
     };
+    
+    const filteredSidebarLinks = userRole === 'Employee'
+        ? sidebarLinks.filter(link => link.link === '/leave-requests')
+        : sidebarLinks;
 
     return (
         <div className="layout">
@@ -22,16 +38,15 @@ const Layout = () => {
                 <div className="role-switcher">
                     <label htmlFor="role-select">Select Role:</label>
                     <select id="role-select" value={userRole} onChange={handleRoleChange}>
-                        <option value="HR Manager">HR Manager</option>
-                        <option value="Project Manager">Project Manager</option>
-                        <option value="Employee">Employee</option>
+                        {roles.map((role) => (
+                            <option value={role}>{role}</option>
+                        ))}
                     </select>
                 </div>
                 <ul>
-                    <li><Link to="/employees">Employees</Link></li>
-                    <li><Link to="/leave-requests">Leave Requests</Link></li>
-                    <li><Link to="/approval-requests">Approval Requests</Link></li>
-                    <li><Link to="/projects">Projects</Link></li>
+                    {filteredSidebarLinks.map((sidebarLink) => (
+                        <li><Link to={sidebarLink.link}>{sidebarLink.label}</Link></li>
+                    ))}
                 </ul>
             </nav>
             <main className="content">
