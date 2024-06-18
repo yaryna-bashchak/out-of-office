@@ -5,6 +5,7 @@ import LeaveRequestContext from './LeaveRequestContext';
 
 interface ApprovalRequestContextType {
     approvalRequests: ApprovalRequest[];
+    filteredApprovalRequests: ApprovalRequest[];
     statuses: ApprovalRequestStatus[];
     editApprovalRequest: (id: number, approvalRequest: ApprovalRequestPayload) => Promise<void>;
     setApprovalRequests: Dispatch<SetStateAction<ApprovalRequest[]>>;
@@ -19,6 +20,7 @@ interface ApprovalRequestProviderProps {
 
 export const ApprovalRequestProvider = ({ children }: ApprovalRequestProviderProps) => {
     const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>([]);
+    const [filteredApprovalRequests, setFilteredApprovalRequests] = useState<ApprovalRequest[]>([]);
     const [statuses, setStatuses] = useState<ApprovalRequestStatus[]>([]);
     const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
@@ -26,13 +28,11 @@ export const ApprovalRequestProvider = ({ children }: ApprovalRequestProviderPro
 
     useEffect(() => {
         const loadApprovalRequests = async () => {
-            const approvalRequests = await agent.ApprovalRequest.getAll(searchTerm);
+            const approvalRequests = await agent.ApprovalRequest.getAll();
             setApprovalRequests(approvalRequests);
         };
         loadApprovalRequests();
-    }, [searchTerm]);
 
-    useEffect(() => {
         const loadStatuses = async () => {
             const statuses = await agent.ApprovalRequest.getStatuses();
             setStatuses(statuses);
@@ -40,9 +40,18 @@ export const ApprovalRequestProvider = ({ children }: ApprovalRequestProviderPro
         loadStatuses();
     }, []);
 
+    useEffect(() => {
+        const loadApprovalRequests = async () => {
+            const approvalRequests = await agent.ApprovalRequest.getAll(searchTerm);
+            setFilteredApprovalRequests(approvalRequests);
+        };
+        loadApprovalRequests();
+    }, [searchTerm]);
+
     const editApprovalRequest = async (id: number, approvalRequest: ApprovalRequestPayload) => {
         const updatedApprovalRequest = await agent.ApprovalRequest.update(id, approvalRequest);
         setApprovalRequests(approvalRequests.map(req => (req.id === id ? updatedApprovalRequest : req)));
+        setFilteredApprovalRequests(approvalRequests.map(req => (req.id === id ? updatedApprovalRequest : req)));
 
         if (leaveRequestContext) {
             const newLeaveRequests = await agent.LeaveRequest.getAll();
@@ -51,7 +60,7 @@ export const ApprovalRequestProvider = ({ children }: ApprovalRequestProviderPro
     };
 
     return (
-        <ApprovalRequestContext.Provider value={{ approvalRequests, statuses, editApprovalRequest, setApprovalRequests, setSearchTerm }}>
+        <ApprovalRequestContext.Provider value={{ approvalRequests, statuses, editApprovalRequest, setApprovalRequests, setSearchTerm, filteredApprovalRequests }}>
             {children}
         </ApprovalRequestContext.Provider>
     );

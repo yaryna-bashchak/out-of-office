@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -22,8 +22,12 @@ const LeaveRequestList = () => {
         throw new Error('LeaveRequestList must be used within a LeaveRequestProvider and UserRoleProvider');
     }
 
-    const { leaveRequests, editLeaveRequestStatus, statuses, setSearchTerm } = context;
+    const { filteredLeaveRequests, editLeaveRequestStatus, statuses, setSearchTerm } = context;
     const { userRole } = userRoleContext;
+
+    useEffect(() => {
+        setSearchTerm(undefined);
+    }, [setSearchTerm]);
 
     const getSortableValue = (leaveRequest: LeaveRequest, key: string) => {
         switch (key) {
@@ -45,7 +49,7 @@ const LeaveRequestList = () => {
     };
 
     const initialSortConfig: SortConfig<LeaveRequest> = { key: 'id', direction: 'asc' };
-    const { sortedItems: sortedLeaveRequests, sortConfig, handleSort } = useSortableData(leaveRequests, initialSortConfig, getSortableValue);
+    const { sortedItems: sortedLeaveRequests, sortConfig, handleSort } = useSortableData(filteredLeaveRequests, initialSortConfig, getSortableValue);
 
     function handleAddLeaveRequest(): void {
         navigate('/leave-requests/new');

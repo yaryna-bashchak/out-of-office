@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { Box, Typography, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { SortConfig, useSortableData } from '../../app/hooks/useSortableData';
@@ -20,8 +20,12 @@ const ProjectList = () => {
         throw new Error('ProjectList must be used within an ProjectProvider and UserRoleProvider');
     }
 
-    const { projects, setSearchTerm } = context;
+    const { filteredProjects, setSearchTerm } = context;
     const { userRole } = userRoleContext;
+
+    useEffect(() => {
+        setSearchTerm(undefined);
+    }, [setSearchTerm]);
 
     const getSortableValue = (project: Project, key: string) => {
         switch (key) {
@@ -41,7 +45,7 @@ const ProjectList = () => {
     };
 
     const initialSortConfig: SortConfig<Project> = { key: 'id', direction: 'asc' };
-    const { sortedItems: sortedProjects, sortConfig, handleSort } = useSortableData(projects, initialSortConfig, getSortableValue);
+    const { sortedItems: sortedProjects, sortConfig, handleSort } = useSortableData(filteredProjects, initialSortConfig, getSortableValue);
 
     function handleAddProject(): void {
         navigate('/projects/new');

@@ -5,6 +5,7 @@ import ApprovalRequestContext from './ApprovalRequestContext';
 
 interface LeaveRequestContextType {
   leaveRequests: LeaveRequest[];
+  filteredLeaveRequests: LeaveRequest[];
   statuses: LeaveRequestStatus[];
   types: RequestType[];
   absenceReasons: AbsenceReason[];
@@ -23,6 +24,7 @@ interface LeaveRequestProviderProps {
 
 export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) => {
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
+  const [filteredLeaveRequests, setFilteredLeaveRequests] = useState<LeaveRequest[]>([]);
   const [statuses, setStatuses] = useState<LeaveRequestStatus[]>([]);
   const [types, setTypes] = useState<RequestType[]>([]);
   const [absenceReasons, setAbsenceReasons] = useState<AbsenceReason[]>([]);
@@ -32,13 +34,11 @@ export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) =>
   
   useEffect(() => {
     const loadLeaveRequests = async () => {
-      const leaveRequests = await agent.LeaveRequest.getAll(searchTerm);
+      const leaveRequests = await agent.LeaveRequest.getAll();
       setLeaveRequests(leaveRequests);
     };
     loadLeaveRequests();
-  }, [searchTerm]);
 
-  useEffect(() => {
     const loadStatuses = async () => {
       const statuses = await agent.LeaveRequest.getStatuses();
       setStatuses(statuses);
@@ -58,19 +58,30 @@ export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) =>
     loadAbsenceReasons();
   }, []);
 
+  useEffect(() => {
+    const loadLeaveRequests = async () => {
+      const leaveRequests = await agent.LeaveRequest.getAll(searchTerm);
+      setFilteredLeaveRequests(leaveRequests);
+    };
+    loadLeaveRequests();
+  }, [searchTerm]);
+
   const addLeaveRequest = async (leaveRequest: LeaveRequestPayload) => {
     const newLeaveRequest = await agent.LeaveRequest.add(leaveRequest);
     setLeaveRequests([...leaveRequests, newLeaveRequest]);
+    setFilteredLeaveRequests([...leaveRequests, newLeaveRequest]);
   };
 
   const editLeaveRequestInfo = async (id: number, leaveRequest: LeaveRequestPayload) => {
     const updatedLeaveRequest = await agent.LeaveRequest.updateInfo(id, leaveRequest);
     setLeaveRequests(leaveRequests.map(req => (req.id === id ? updatedLeaveRequest : req)));
+    setFilteredLeaveRequests(leaveRequests.map(req => (req.id === id ? updatedLeaveRequest : req)));
   };
 
   const editLeaveRequestStatus = async (id: number, statusId: number) => {
     const updatedLeaveRequest = await agent.LeaveRequest.updateStatus(id, statusId);
     setLeaveRequests(leaveRequests.map(req => (req.id === id ? updatedLeaveRequest : req)));
+    setFilteredLeaveRequests(leaveRequests.map(req => (req.id === id ? updatedLeaveRequest : req)));
 
     if (approvalRequestContext) {
       const newApprovalRequests = await agent.ApprovalRequest.getAll();
@@ -79,7 +90,7 @@ export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) =>
   };
 
   return (
-    <LeaveRequestContext.Provider value={{ leaveRequests, types, statuses, absenceReasons, addLeaveRequest, editLeaveRequestInfo, editLeaveRequestStatus, setLeaveRequests, setSearchTerm }}>
+    <LeaveRequestContext.Provider value={{ leaveRequests, types, statuses, absenceReasons, addLeaveRequest, editLeaveRequestInfo, editLeaveRequestStatus, setLeaveRequests, setSearchTerm, filteredLeaveRequests }}>
       {children}
     </LeaveRequestContext.Provider>
   );

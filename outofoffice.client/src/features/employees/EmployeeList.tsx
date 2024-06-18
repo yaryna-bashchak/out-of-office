@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import EmployeeContext from '../../app/context/EmployeeContext';
 import { Box, Typography, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -20,8 +20,12 @@ const EmployeeList = () => {
         throw new Error('EmployeeList must be used within an EmployeeProvider and UserRoleProvider');
     }
 
-    const { employees, setSearchTerm } = context;
+    const { filteredEmployees, setSearchTerm } = context;
     const { userRole } = userRoleContext;
+    
+    useEffect(() => {
+        setSearchTerm(undefined);
+    }, [setSearchTerm]);
 
     const getSortableValue = (employee: Employee, key: string) => {
         switch (key) {
@@ -43,7 +47,7 @@ const EmployeeList = () => {
     };
 
     const initialSortConfig: SortConfig<Employee> = { key: 'id', direction: 'asc' };
-    const { sortedItems: sortedEmployees, sortConfig, handleSort } = useSortableData(employees, initialSortConfig, getSortableValue);
+    const { sortedItems: sortedEmployees, sortConfig, handleSort } = useSortableData(filteredEmployees, initialSortConfig, getSortableValue);
 
     function handleAddEmployee(): void {
         navigate('/employees/new');
@@ -60,11 +64,11 @@ const EmployeeList = () => {
     function handleAssignEmployeeToProject(id: number): void {
         navigate(`/employees/${id}/assign-to-project`);
     }
-
+    
     const handleSearch = (term: string) => {
         setSearchTerm(term);
     };
-
+    
     return (
         <Box sx={{ minWidth: '800px' }}>
             <Box display='flex' justifyContent='space-between'>

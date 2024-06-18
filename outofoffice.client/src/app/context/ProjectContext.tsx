@@ -5,6 +5,7 @@ import EmployeeContext from "./EmployeeContext";
 
 interface ProjectContextType {
     projects: Project[];
+    filteredProjects: Project[];
     statuses: ProjectStatus[];
     types: ProjectType[];
     addProject: (project: ProjectPayload) => Promise<void>;
@@ -22,6 +23,7 @@ interface ProjectProviderProps {
 
 export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
     const [statuses, setStatuses] = useState<ProjectStatus[]>([]);
     const [types, setTypes] = useState<ProjectType[]>([]);
     const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
@@ -35,13 +37,11 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
 
     useEffect(() => {
         const loadProjects = async () => {
-            const projects = await agent.Project.getAll(searchTerm);
+            const projects = await agent.Project.getAll();
             setProjects(projects);
         };
         loadProjects();
-    }, [searchTerm]);
 
-    useEffect(() => {
         const loadStatuses = async () => {
             const statuses = await agent.Project.getStatuses();
             setStatuses(statuses);
@@ -55,14 +55,24 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
         loadTypes();
     }, []);
 
+    useEffect(() => {
+        const loadProjects = async () => {
+            const projects = await agent.Project.getAll(searchTerm);
+            setFilteredProjects(projects);
+        };
+        loadProjects();
+    }, [searchTerm]);
+
     const addProject = async (project: ProjectPayload) => {
         const newProject = await agent.Project.add(project);
         setProjects([...projects, newProject]);
+        setFilteredProjects([...projects, newProject]);
     };
 
     const editProject = async (id: number, project: ProjectPayload) => {
         const updatedProject = await agent.Project.update(id, project);
         setProjects(projects.map(proj => (proj.id === id ? updatedProject : proj)));
+        setFilteredProjects(projects.map(proj => (proj.id === id ? updatedProject : proj)));
     };
 
     const addProjectEmployee = async (employee: ProjectEmployee) => {
@@ -96,7 +106,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     };
 
     return (
-        <ProjectContext.Provider value={{ projects, statuses, types, addProject, editProject, addProjectEmployee, editProjectEmployee, setSearchTerm }}>
+        <ProjectContext.Provider value={{ projects, statuses, types, addProject, editProject, addProjectEmployee, editProjectEmployee, setSearchTerm, filteredProjects }}>
             {children}
         </ProjectContext.Provider>
     );

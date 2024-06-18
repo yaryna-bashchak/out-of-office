@@ -4,6 +4,7 @@ import agent from '../api/agent';
 
 interface EmployeeContextType {
   employees: Employee[];
+  filteredEmployees: Employee[];
   positions: Position[];
   statuses: EmployeeStatus[];
   subdivisions: Subdivision[];
@@ -23,6 +24,7 @@ interface EmployeeProviderProps {
 
 export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [hrManagers, setHrManagers] = useState<Employee[]>([]);
   const [projectManagers, setProjectManagers] = useState<Employee[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
@@ -32,13 +34,11 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
 
   useEffect(() => {
     const loadEmployees = async () => {
-      const employees = await agent.Employee.getAll(searchTerm);
+      const employees = await agent.Employee.getAll();
       setEmployees(employees);
     };
     loadEmployees();
-  }, [searchTerm]);
 
-  useEffect(() => {
     const loadPositions = async () => {
       const positions = await agent.Employee.getPositions();
       setPositions(positions);
@@ -70,9 +70,18 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
     loadProjectManagers();
   }, []);
 
+  useEffect(() => {
+    const loadEmployees = async () => {
+      const employees = await agent.Employee.getAll(searchTerm);
+      setFilteredEmployees(employees);
+    };
+    loadEmployees();
+  }, [searchTerm]);
+
   const addEmployee = async (employee: EmployeePayload) => {
     const newEmployee = await agent.Employee.add(employee);
     setEmployees([...employees, newEmployee]);
+    setFilteredEmployees([...employees, newEmployee]);
 
     if (newEmployee.position.name === 'HR Manager') {
       setHrManagers([...hrManagers, newEmployee]);
@@ -85,6 +94,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const editEmployee = async (id: number, employee: EmployeePayload) => {
     const updatedEmployee = await agent.Employee.update(id, employee);
     setEmployees(employees.map(emp => (emp.id === id ? updatedEmployee : emp)));
+    setFilteredEmployees(employees.map(emp => (emp.id === id ? updatedEmployee : emp)));
 
     if (updatedEmployee.position.name === 'HR Manager') {
       setHrManagers(hrManagers.map(emp => (emp.id === id ? updatedEmployee : emp)));
@@ -100,7 +110,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   };
 
   return (
-    <EmployeeContext.Provider value={{ employees, positions, statuses, subdivisions, addEmployee, editEmployee, hrManagers, projectManagers, setEmployees, setSearchTerm }}>
+    <EmployeeContext.Provider value={{ employees, positions, statuses, subdivisions, addEmployee, editEmployee, hrManagers, projectManagers, setEmployees, setSearchTerm, filteredEmployees }}>
       {children}
     </EmployeeContext.Provider>
   );

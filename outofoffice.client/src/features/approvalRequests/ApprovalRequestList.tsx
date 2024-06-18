@@ -1,5 +1,5 @@
 import { TableCell, Box, Typography, TableContainer, Paper, Table, TableHead, TableRow, TableBody, useTheme } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SortableTableCell from "../../app/components/SortableTableCell";
 import { getStatusStyles } from "../../app/components/getStatusStyles";
@@ -19,8 +19,12 @@ const ApprovalRequestList = () => {
         throw new Error('ApprovalRequestList must be used within an ApprovalRequestProvider');
     }
 
-    const { approvalRequests, statuses, editApprovalRequest, setSearchTerm } = context;
+    const { filteredApprovalRequests, statuses, editApprovalRequest, setSearchTerm } = context;
 
+    useEffect(() => {
+        setSearchTerm(undefined);
+    }, [setSearchTerm]);
+    
     const getSortableValue = (approvalRequest: ApprovalRequest, key: string) => {
         switch (key) {
             case 'approver.fullName':
@@ -39,7 +43,7 @@ const ApprovalRequestList = () => {
     };
 
     const initialSortConfig: SortConfig<ApprovalRequest> = { key: 'id', direction: 'asc' };
-    const { sortedItems: sortedApprovalRequests, sortConfig, handleSort } = useSortableData(approvalRequests, initialSortConfig, getSortableValue);
+    const { sortedItems: sortedApprovalRequests, sortConfig, handleSort } = useSortableData(filteredApprovalRequests, initialSortConfig, getSortableValue);
 
     function handleViewApprovalRequest(id: number): void {
         navigate(`/approval-requests/${id}`);
