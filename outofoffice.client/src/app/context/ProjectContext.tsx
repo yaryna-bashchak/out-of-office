@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState, useEffect, useContext } from "react";
+import { createContext, ReactNode, useState, useEffect, useContext, Dispatch, SetStateAction } from "react";
 import agent from "../api/agent";
 import { Project, ProjectStatus, ProjectType, ProjectPayload, ProjectEmployee } from "../models/project";
 import EmployeeContext from "./EmployeeContext";
@@ -11,6 +11,7 @@ interface ProjectContextType {
     editProject: (id: number, project: ProjectPayload) => Promise<void>;
     addProjectEmployee: (employee: ProjectEmployee) => Promise<void>;
     editProjectEmployee: (employee: ProjectEmployee) => Promise<void>;
+    setSearchTerm: Dispatch<SetStateAction<string | undefined>>;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -23,6 +24,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [statuses, setStatuses] = useState<ProjectStatus[]>([]);
     const [types, setTypes] = useState<ProjectType[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
     const employeeContext = useContext(EmployeeContext);
 
@@ -33,11 +35,13 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
 
     useEffect(() => {
         const loadProjects = async () => {
-            const projects = await agent.Project.getAll();
+            const projects = await agent.Project.getAll(searchTerm);
             setProjects(projects);
         };
         loadProjects();
+    }, [searchTerm]);
 
+    useEffect(() => {
         const loadStatuses = async () => {
             const statuses = await agent.Project.getStatuses();
             setStatuses(statuses);
@@ -92,7 +96,7 @@ export const ProjectProvider = ({ children }: ProjectProviderProps) => {
     };
 
     return (
-        <ProjectContext.Provider value={{ projects, statuses, types, addProject, editProject, addProjectEmployee, editProjectEmployee }}>
+        <ProjectContext.Provider value={{ projects, statuses, types, addProject, editProject, addProjectEmployee, editProjectEmployee, setSearchTerm }}>
             {children}
         </ProjectContext.Provider>
     );

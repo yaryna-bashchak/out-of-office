@@ -8,6 +8,7 @@ interface ApprovalRequestContextType {
     statuses: ApprovalRequestStatus[];
     editApprovalRequest: (id: number, approvalRequest: ApprovalRequestPayload) => Promise<void>;
     setApprovalRequests: Dispatch<SetStateAction<ApprovalRequest[]>>;
+    setSearchTerm: Dispatch<SetStateAction<string | undefined>>;
 }
 
 const ApprovalRequestContext = createContext<ApprovalRequestContextType | undefined>(undefined);
@@ -19,16 +20,19 @@ interface ApprovalRequestProviderProps {
 export const ApprovalRequestProvider = ({ children }: ApprovalRequestProviderProps) => {
     const [approvalRequests, setApprovalRequests] = useState<ApprovalRequest[]>([]);
     const [statuses, setStatuses] = useState<ApprovalRequestStatus[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
     const leaveRequestContext = useContext(LeaveRequestContext);
 
     useEffect(() => {
         const loadApprovalRequests = async () => {
-            const approvalRequests = await agent.ApprovalRequest.getAll();
+            const approvalRequests = await agent.ApprovalRequest.getAll(searchTerm);
             setApprovalRequests(approvalRequests);
         };
         loadApprovalRequests();
+    }, [searchTerm]);
 
+    useEffect(() => {
         const loadStatuses = async () => {
             const statuses = await agent.ApprovalRequest.getStatuses();
             setStatuses(statuses);
@@ -47,7 +51,7 @@ export const ApprovalRequestProvider = ({ children }: ApprovalRequestProviderPro
     };
 
     return (
-        <ApprovalRequestContext.Provider value={{ approvalRequests, statuses, editApprovalRequest, setApprovalRequests }}>
+        <ApprovalRequestContext.Provider value={{ approvalRequests, statuses, editApprovalRequest, setApprovalRequests, setSearchTerm }}>
             {children}
         </ApprovalRequestContext.Provider>
     );

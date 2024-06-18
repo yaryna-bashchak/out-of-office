@@ -11,7 +11,8 @@ interface EmployeeContextType {
   editEmployee: (id: number, employee: EmployeePayload) => Promise<void>;
   hrManagers: Employee[];
   projectManagers: Employee[];
-  setEmployees: Dispatch<SetStateAction<Employee[]>>
+  setEmployees: Dispatch<SetStateAction<Employee[]>>;
+  setSearchTerm: Dispatch<SetStateAction<string | undefined>>;
 }
 
 const EmployeeContext = createContext<EmployeeContextType | undefined>(undefined);
@@ -27,14 +28,17 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [statuses, setStatuses] = useState<EmployeeStatus[]>([]);
   const [subdivisions, setSubdivisions] = useState<Subdivision[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const loadEmployees = async () => {
-      const employees = await agent.Employee.getAll();
+      const employees = await agent.Employee.getAll(searchTerm);
       setEmployees(employees);
     };
     loadEmployees();
+  }, [searchTerm]);
 
+  useEffect(() => {
     const loadPositions = async () => {
       const positions = await agent.Employee.getPositions();
       setPositions(positions);
@@ -96,7 +100,7 @@ export const EmployeeProvider = ({ children }: EmployeeProviderProps) => {
   };
 
   return (
-    <EmployeeContext.Provider value={{ employees, positions, statuses, subdivisions, addEmployee, editEmployee, hrManagers, projectManagers, setEmployees }}>
+    <EmployeeContext.Provider value={{ employees, positions, statuses, subdivisions, addEmployee, editEmployee, hrManagers, projectManagers, setEmployees, setSearchTerm }}>
       {children}
     </EmployeeContext.Provider>
   );

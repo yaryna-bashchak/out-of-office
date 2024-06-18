@@ -13,7 +13,7 @@ const requests = {
 }
 
 const Employee = {
-    getAll: () => requests.get('employees'),
+    getAll: (searchTerm?: string) => requests.get('employees', searchTerm ? new URLSearchParams({ searchTerm }) : undefined),
     getById: (id: number) => requests.get(`employees/${id}`),
     add: (body: object) => requests.post('employees', body),
     update: (id: number, body: object) => requests.put(`employees/${id}`, body),
@@ -25,7 +25,7 @@ const Employee = {
 }
 
 const LeaveRequest = {
-    getAll: () => requests.get('leaveRequests'),
+    getAll: (searchTerm?: string) => requests.get('leaveRequests', searchTerm ? new URLSearchParams({ searchTerm }) : undefined),
     getById: (id: number) => requests.get(`leaveRequests/${id}`),
     add: (body: object) => requests.post('leaveRequests', body),
     updateInfo: (id: number, body: object) => requests.put(`leaveRequests/${id}`, body),
@@ -36,14 +36,14 @@ const LeaveRequest = {
 };
 
 const ApprovalRequest = {
-    getAll: () => requests.get('approvalRequests'),
+    getAll: (searchTerm?: string) => requests.get('approvalRequests', searchTerm ? new URLSearchParams({ searchTerm }) : undefined),
     getById: (id: number) => requests.get(`approvalRequests/${id}`),
     update: (id: number, body: object) => requests.put(`approvalRequests/${id}`, body),
     getStatuses: () => requests.get('approvalRequests/statuses'),
 };
 
 const Project = {
-    getAll: () => requests.get('projects'),
+    getAll: (searchTerm?: string) => requests.get('projects', searchTerm ? new URLSearchParams({ searchTerm }) : undefined),
     getById: (id: number) => requests.get(`projects/${id}`),
     add: (body: object) => requests.post('projects', body),
     update: (id: number, body: object) => requests.put(`projects/${id}`, body),

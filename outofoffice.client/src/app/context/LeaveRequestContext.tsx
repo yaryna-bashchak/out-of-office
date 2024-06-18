@@ -12,6 +12,7 @@ interface LeaveRequestContextType {
   editLeaveRequestInfo: (id: number, leaveRequest: LeaveRequestPayload) => Promise<void>;
   editLeaveRequestStatus: (id: number, statusId: number,) => Promise<void>;
   setLeaveRequests: Dispatch<SetStateAction<LeaveRequest[]>>;
+  setSearchTerm: Dispatch<SetStateAction<string | undefined>>;
 }
 
 const LeaveRequestContext = createContext<LeaveRequestContextType | undefined>(undefined);
@@ -25,16 +26,19 @@ export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) =>
   const [statuses, setStatuses] = useState<LeaveRequestStatus[]>([]);
   const [types, setTypes] = useState<RequestType[]>([]);
   const [absenceReasons, setAbsenceReasons] = useState<AbsenceReason[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string | undefined>(undefined);
 
   const approvalRequestContext = useContext(ApprovalRequestContext);
   
   useEffect(() => {
     const loadLeaveRequests = async () => {
-      const leaveRequests = await agent.LeaveRequest.getAll();
+      const leaveRequests = await agent.LeaveRequest.getAll(searchTerm);
       setLeaveRequests(leaveRequests);
     };
     loadLeaveRequests();
+  }, [searchTerm]);
 
+  useEffect(() => {
     const loadStatuses = async () => {
       const statuses = await agent.LeaveRequest.getStatuses();
       setStatuses(statuses);
@@ -75,7 +79,7 @@ export const LeaveRequestProvider = ({ children }: LeaveRequestProviderProps) =>
   };
 
   return (
-    <LeaveRequestContext.Provider value={{ leaveRequests, types, statuses, absenceReasons, addLeaveRequest, editLeaveRequestInfo, editLeaveRequestStatus, setLeaveRequests }}>
+    <LeaveRequestContext.Provider value={{ leaveRequests, types, statuses, absenceReasons, addLeaveRequest, editLeaveRequestInfo, editLeaveRequestStatus, setLeaveRequests, setSearchTerm }}>
       {children}
     </LeaveRequestContext.Provider>
   );
