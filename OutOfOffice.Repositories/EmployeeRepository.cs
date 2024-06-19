@@ -127,8 +127,8 @@ public class EmployeeRepository : IEmployeeRepository
                     PositionID = @PositionID,
                     StatusID = @StatusID,
                     PeoplePartnerID = @PeoplePartnerID, 
-                    OutOfOfficeBalance = @OutOfOfficeBalance,
-                WHERE id = @id";
+                    OutOfOfficeBalance = @OutOfOfficeBalance
+                WHERE id = @Id";
 
             try
             {
