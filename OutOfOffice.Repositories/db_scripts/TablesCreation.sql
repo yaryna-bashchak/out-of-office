@@ -60,7 +60,7 @@ CREATE TABLE RequestTypes ( -- full days, partial day
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'LeaveRequestStatuses')
-CREATE TABLE LeaveRequestStatuses ( -- 'New', 'Approved', 'Cancelled'
+CREATE TABLE LeaveRequestStatuses ( -- 'New', 'Submitted', 'Cancelled', 'Approved', 'Rejected'
     ID INT PRIMARY KEY IDENTITY(1,1),
     Name VARCHAR(50) NOT NULL
 );
@@ -87,7 +87,7 @@ GO
 
 -- Approval Requests
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ApprovalRequestStatuses')
-CREATE TABLE ApprovalRequestStatuses ( -- 'New', 'Approved', 'Rejected'
+CREATE TABLE ApprovalRequestStatuses ( -- 'New', 'Approved', 'Rejected', 'Cancelled'
     ID INT PRIMARY KEY IDENTITY(1,1),
     Name VARCHAR(50) NOT NULL
 );
@@ -115,7 +115,7 @@ CREATE TABLE ProjectTypes (
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ProjectStatuses')
-CREATE TABLE ProjectStatuses ( -- 'Active', 'Inactive'
+CREATE TABLE ProjectStatuses ( -- 'Active', 'Inactive', 'Completed'
     ID INT PRIMARY KEY IDENTITY(1,1),
     Name VARCHAR(50) NOT NULL
 );

@@ -26,8 +26,8 @@ INSERT INTO EmployeeStatuses (Name) VALUES
 GO
 
 IF NOT EXISTS (SELECT * FROM Employees)
-INSERT INTO Employees (FullName, SubdivisionID, PositionID, StatusID, PeoplePartnerID, OutOfOfficeBalance)
 BEGIN
+INSERT INTO Employees (FullName, SubdivisionID, PositionID, StatusID, PeoplePartnerID, OutOfOfficeBalance)
     VALUES ('Kylo Silva',		1, 4, 1, NULL, 15.0),
             ('Carolina Zhang',	1, 3, 1, NULL, 10.0),
             ('Dion Sheppard',	1, 3, 1, 2, 12.5),
