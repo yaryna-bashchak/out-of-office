@@ -31,7 +31,7 @@ const Layout = () => {
     };
 
     const filteredSidebarLinks = userRole === 'Employee'
-        ? sidebarLinks.filter(link => link.link === '/leave-requests')
+        ? sidebarLinks.filter(link => link.link === '/leave-requests' || link.link === '/projects')
         : sidebarLinks;
 
     return (

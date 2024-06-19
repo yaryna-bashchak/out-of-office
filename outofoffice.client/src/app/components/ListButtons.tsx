@@ -66,7 +66,7 @@ export const ApproveButton: React.FC<{ id: number; statusName: string; handleApp
         disabled={statusName !== 'New'}
         sx={{ width: '70px' }}
     >
-        {statusName === 'New' || statusName === 'Cancelled' ? 'Approve' : 'Approved'}
+        {statusName === 'Approved' ? 'Approved' : 'Approve'}
     </Button>
 );
 
